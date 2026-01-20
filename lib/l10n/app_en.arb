@@ -1,3 +1,13 @@
 {
-    "@@locale": "en"
+    "@@locale": "en",
+    "loginTitle": "Login",
+    "userCode": "User Code",
+    "password": "Password",
+    "loginButton": "Login",
+    "userCodeHint": "Enter user code",
+    "passwordHint": "Enter password",
+    "userCodeRequired": "User code is required",
+    "passwordRequired": "Password is required",
+    "welcomeBack": "Welcome Back",
+    "propertyBooking": "Property Booking"
 }

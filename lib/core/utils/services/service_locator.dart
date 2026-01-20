@@ -5,6 +5,9 @@ import 'package:get_it/get_it.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:propertybooking/core/utils/cached/hive_service.dart';
 import 'package:propertybooking/core/utils/networking/api_constants.dart';
+import 'package:propertybooking/core/utils/networking/api_service.dart';
+import 'package:propertybooking/core/utils/services/device_info_service.dart';
+import 'package:propertybooking/features/auth/data/repos/auth_repo.dart';
 
 final getIt = GetIt.instance;
 
@@ -15,15 +18,16 @@ Future<void> setupServiceLocator() async {
   );
 
   getIt.registerLazySingleton<HiveService>(() => HiveService());
+  getIt.registerLazySingleton<DeviceInfoProvider>(() => DeviceInfoProvider());
 
   final token = await getIt<FlutterSecureStorage>().read(key: 'auth_token');
-  final PropertyBookingUrl = ApiConstants.PropertyBookingUrl;
+  final propertyBookingUrl = ApiConstants.PropertyBookingUrl;
 
   final Dio dio = Dio(
     BaseOptions(
       maxRedirects: 10000,
       connectTimeout: Duration(seconds: 30),
-      baseUrl: PropertyBookingUrl,
+      baseUrl: propertyBookingUrl,
       headers: {
         'Accept': 'application/json',
         'lang': Platform.localeName.split('_').last == 'ar' ? 'ar' : 'en',
@@ -57,11 +61,13 @@ Future<void> setupServiceLocator() async {
     return dio;
   });
 
-  // await getIt.allReady(); // Ensure that Dio is ready before proceeding
+  await getIt.allReady(); // Ensure that Dio is ready before proceeding
 
-  // getIt.registerLazySingleton<ApiService>(() {
-  //   return ApiService(getIt<Dio>());
-  // });
+  getIt.registerLazySingleton<ApiService>(() {
+    return ApiService(getIt<Dio>());
+  });
 
-  // getIt.registerLazySingleton<AuthRepo>(() => AuthRepo(getIt<ApiService>()));
+  getIt.registerLazySingleton<AuthRepo>(
+    () => AuthRepo(getIt<ApiService>(), getIt<DeviceInfoProvider>()),
+  );
 }

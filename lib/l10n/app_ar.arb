@@ -1,3 +1,13 @@
 {
-    "@@locale": "ar"
+    "@@locale": "ar",
+    "loginTitle": "تسجيل الدخول",
+    "userCode": "كود المستخدم",
+    "password": "كلمة المرور",
+    "loginButton": "تسجيل الدخول",
+    "userCodeHint": "أدخل كود المستخدم",
+    "passwordHint": "أدخل كلمة المرور",
+    "userCodeRequired": "كود المستخدم مطلوب",
+    "passwordRequired": "كلمة المرور مطلوبة",
+    "welcomeBack": "مرحباً بعودتك",
+    "propertyBooking": "حجز العقارات"
 }

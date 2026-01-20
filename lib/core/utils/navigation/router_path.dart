@@ -1,29 +1,4 @@
 class RouterPath {
   static const String splashView = '/';
-  static const String onBoardingView = 'onBoardingView';
-  static const String login = 'login';
-  static const String register = 'register';
-  static const String confirmPhoneView = 'ConfirmPhoneNumberView';
-  static const String setPasswordView = 'setPasswordView';
-  static const String accountCreatedSuccessfully = 'accountCreatedSuccessfully';
-  static const String forgetPasswordView = 'forgetPasswordView';
-  static const String homeView = 'homeView';
-  static const String navBar = 'navBar';
-  static const String developerProfileView = 'developerProfileView';
-  static const String projectProfileView = 'projectProfileView';
-  static const String propertyTypesFilter = 'propertyTypesFilter';
-  static const String personalInformationView = 'personalInformationView';
-  static const String changePhoneNumberView = 'changePhoneNumberView';
-  static const String changePasswordView = 'changePasswordView';
-  static const String seeAllScreen = 'seeAllScreen';
-  static const String termsAndCondition = 'termsAndCondition';
-  static const String privacyPolicy = 'privacyPolicy';
-  static const String guestView = 'GuestView';
-  static const String propertyDetails = 'propertyDetails';
-  static const String searchScreen = 'searchScreen';
-  static const String addPropertyView = 'addPropertyView';
-  static const String searchDeveloperView = 'searchDeveloperView';
-  static const String favoritesView = 'favoritesView';
-  static const String propertyFilterView = 'PropertyFilterView';
-  static const String filterResult = 'filterResult';
+  static const String loginView = 'LoginView';
 }

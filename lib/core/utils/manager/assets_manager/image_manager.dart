@@ -6,4 +6,7 @@ class ImageManager {
   static const String developerProfileImage =
       'assets/images/developer_profile_image.png';
   static const String stopImage = 'assets/images/Group.svg';
+
+  //-------------------------- new ------------------------
+  static const String splashImage = 'assets/images/splash.png';
 }
