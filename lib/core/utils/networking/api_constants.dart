@@ -1,0 +1,34 @@
+class ApiConstants {
+  static const String PropertyBookingUrl = 'https://api.amlakmap.com/api/v1/';
+  static const String register = 'register';
+  static const String login = 'login';
+  static const String createPassword = 'create-password';
+  static const String socialAuthentication = 'social-authentication';
+  static const String banners = 'banners';
+  static const String propertyTypes = 'property-types';
+  static const String recentProperties = 'recent-properties';
+  static const String nearbyProperties = 'nearby-properties';
+  static const String realEstateDevelopers = 'real-estate-developers';
+  static const String propertyByTypes = 'properties';
+  static const String sendOtp = 'send-otp';
+  static const String verifyOtp = 'verify-otp';
+  static const String forgetPassword = 'forget-password';
+  static const String resetPassword = 'reset-password';
+  static const String profile = 'profile';
+  static const String updateProfile = '/profile/update';
+  static const String profileUpdatePhone = '/profile/update-phone';
+  static const String profileLogout = '/logout';
+  static const String profileDeleteAccount = '/delete-account';
+  static const String checkOtp = '/check-otp';
+  static const String propertyDetails = '/properties';
+  static const String changePassword = '/profile/change-password';
+  static const String search = '/search';
+  static const String lookups = '/lookups';
+  static const String amenities = '/amenities';
+  static const String addProperty = '/properties';
+  static const String toggleFavorite = '/favorites/toggle';
+  static const String favorites = '/favorites';
+  static const String packages_buying = '/packages/buying';
+  static const String packages_selling = '/packages/selling';
+  static const String rate = "/rate";
+}
