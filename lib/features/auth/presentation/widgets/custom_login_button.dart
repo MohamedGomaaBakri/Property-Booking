@@ -3,7 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CustomLoginButton extends StatefulWidget {
   final String text;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
   final bool isLoading;
 
   const CustomLoginButton({
@@ -47,8 +47,8 @@ class _CustomLoginButtonState extends State<CustomLoginButton>
       onTapDown: (_) => _controller.forward(),
       onTapUp: (_) {
         _controller.reverse();
-        if (!widget.isLoading) {
-          widget.onPressed();
+        if (!widget.isLoading && widget.onPressed != null) {
+          widget.onPressed!();
         }
       },
       onTapCancel: () => _controller.reverse(),

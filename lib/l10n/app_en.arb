@@ -9,5 +9,10 @@
     "userCodeRequired": "User code is required",
     "passwordRequired": "Password is required",
     "welcomeBack": "Welcome Back",
-    "propertyBooking": "Property Booking"
+    "propertyBooking": "Property Booking",
+    "loginError": "Login Error",
+    "invalidCredentials": "Invalid user code or password",
+    "userNotFound": "User code not found",
+    "invalidPassword": "Invalid password",
+    "tryAgain": "Try Again"
 }

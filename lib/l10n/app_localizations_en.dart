@@ -37,4 +37,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get propertyBooking => 'Property Booking';
+
+  @override
+  String get loginError => 'Login Error';
+
+  @override
+  String get invalidCredentials => 'Invalid user code or password';
+
+  @override
+  String get userNotFound => 'User code not found';
+
+  @override
+  String get invalidPassword => 'Invalid password';
+
+  @override
+  String get tryAgain => 'Try Again';
 }

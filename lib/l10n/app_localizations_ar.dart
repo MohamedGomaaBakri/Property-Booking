@@ -37,4 +37,19 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get propertyBooking => 'حجز العقارات';
+
+  @override
+  String get loginError => 'خطأ في تسجيل الدخول';
+
+  @override
+  String get invalidCredentials => 'كود المستخدم أو كلمة المرور غير صحيحة';
+
+  @override
+  String get userNotFound => 'كود المستخدم غير موجود';
+
+  @override
+  String get invalidPassword => 'كلمة المرور غير صحيحة';
+
+  @override
+  String get tryAgain => 'حاول مرة أخرى';
 }

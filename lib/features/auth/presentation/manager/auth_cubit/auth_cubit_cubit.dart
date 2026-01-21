@@ -9,6 +9,54 @@ class AuthCubitCubit extends Cubit<AuthCubitState> {
 
   final AuthRepo authRepo;
 
+  Future<void> validateAndLogin(int userCode, String password) async {
+    emit(state.copyWith(loginState: EnumState.loading));
+    final result = await authRepo.getUser(userCode);
+    result.fold(
+      (failure) {
+        emit(state.copyWith(loginState: EnumState.failure));
+      },
+      (userModel) {
+        // Check if items list is empty (user not found)
+        if (userModel.items == null || userModel.items!.isEmpty) {
+          emit(
+            state.copyWith(
+              loginState: EnumState.failure,
+              errMessege: 'userNotFound',
+            ),
+          );
+          return;
+        }
+
+        // Get the password from the response
+        final apiPassword = userModel.items![0].password;
+
+        // Validate password
+        if (apiPassword != password) {
+          emit(
+            state.copyWith(
+              loginState: EnumState.failure,
+              errMessege: 'invalidPassword',
+            ),
+          );
+          return;
+        }
+
+        // Password is correct, proceed with login
+        emit(
+          state.copyWith(
+            loginState: EnumState.success,
+            userModel: userModel,
+            errMessege: null,
+          ),
+        );
+
+        // Call postActivity after successful login
+        postActivity(userModel.items![0].empCode ?? 0);
+      },
+    );
+  }
+
   Future<void> getUser(int userCode) async {
     emit(state.copyWith(loginState: EnumState.loading));
     final result = await authRepo.getUser(userCode);
@@ -20,7 +68,6 @@ class AuthCubitCubit extends Cubit<AuthCubitState> {
         emit(
           state.copyWith(loginState: EnumState.success, userModel: userModel),
         );
-        postActivity(userModel.items?[0].empCode ?? 0);
       },
     );
   }

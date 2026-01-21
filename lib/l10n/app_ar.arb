@@ -9,5 +9,10 @@
     "userCodeRequired": "كود المستخدم مطلوب",
     "passwordRequired": "كلمة المرور مطلوبة",
     "welcomeBack": "مرحباً بعودتك",
-    "propertyBooking": "حجز العقارات"
+    "propertyBooking": "حجز العقارات",
+    "loginError": "خطأ في تسجيل الدخول",
+    "invalidCredentials": "كود المستخدم أو كلمة المرور غير صحيحة",
+    "userNotFound": "كود المستخدم غير موجود",
+    "invalidPassword": "كلمة المرور غير صحيحة",
+    "tryAgain": "حاول مرة أخرى"
 }
