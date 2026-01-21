@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:propertybooking/core/utils/manager/color_manager/color_manager.dart';
 
 class CustomLoginButton extends StatefulWidget {
   final String text;
@@ -59,14 +60,14 @@ class _CustomLoginButtonState extends State<CustomLoginButton>
           height: 56.h,
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [const Color(0xFF1A4D6D), const Color(0xFF2E7D9A)],
+              colors: [ColorManager.brandBlue, ColorManager.brandLightBlue],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
             borderRadius: BorderRadius.circular(16.r),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFF1A4D6D).withOpacity(0.4),
+                color: ColorManager.brandBlue.withOpacity(0.4),
                 blurRadius: 20,
                 offset: const Offset(0, 8),
               ),
@@ -83,14 +84,14 @@ class _CustomLoginButtonState extends State<CustomLoginButton>
                         width: 24.w,
                         height: 24.h,
                         child: const CircularProgressIndicator(
-                          color: Colors.white,
+                          color: ColorManager.white,
                           strokeWidth: 2.5,
                         ),
                       )
                     : Text(
                         widget.text,
                         style: TextStyle(
-                          color: Colors.white,
+                          color: ColorManager.white,
                           fontSize: 18.sp,
                           fontWeight: FontWeight.bold,
                           letterSpacing: 1.2,

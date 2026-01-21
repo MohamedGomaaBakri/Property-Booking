@@ -5,6 +5,7 @@ import 'package:propertybooking/core/utils/manager/assets_manager/image_manager.
 import 'package:propertybooking/core/widgets/Images/custome_image.dart';
 import 'package:propertybooking/features/auth/presentation/widgets/language_toggle_button.dart';
 import 'package:propertybooking/features/auth/presentation/widgets/login_form_widget.dart';
+import 'package:propertybooking/core/utils/manager/color_manager/color_manager.dart';
 import 'dart:ui';
 
 class LoginView extends StatefulWidget {
@@ -57,7 +58,7 @@ class _LoginViewState extends State<LoginView>
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: ColorManager.black,
       body: Stack(
         fit: StackFit.expand,
         children: [
@@ -71,8 +72,8 @@ class _LoginViewState extends State<LoginView>
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  Colors.black.withOpacity(0.6),
-                  Colors.black.withOpacity(0.8),
+                  ColorManager.black.withOpacity(0.6),
+                  ColorManager.black.withOpacity(0.8),
                 ],
               ),
             ),
@@ -98,15 +99,15 @@ class _LoginViewState extends State<LoginView>
                         width: 100.w,
                         height: 100.h,
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.15),
+                          color: ColorManager.white.withOpacity(0.15),
                           borderRadius: BorderRadius.circular(25.r),
                           border: Border.all(
-                            color: Colors.white.withOpacity(0.3),
+                            color: ColorManager.white.withOpacity(0.3),
                             width: 2,
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: const Color(0xFF1A4D6D).withOpacity(0.3),
+                              color: ColorManager.brandBlue.withOpacity(0.3),
                               blurRadius: 20,
                               spreadRadius: 5,
                             ),
@@ -115,7 +116,7 @@ class _LoginViewState extends State<LoginView>
                         child: Icon(
                           Icons.home_work_rounded,
                           size: 55.sp,
-                          color: Colors.white,
+                          color: ColorManager.white,
                         ),
                       ),
                     ),
@@ -132,7 +133,7 @@ class _LoginViewState extends State<LoginView>
                             style: TextStyle(
                               fontSize: 28.sp,
                               fontWeight: FontWeight.bold,
-                              color: Colors.white,
+                              color: ColorManager.white,
                               letterSpacing: 0.5,
                               shadows: [
                                 Shadow(
@@ -148,7 +149,7 @@ class _LoginViewState extends State<LoginView>
                             l10n.propertyBooking,
                             style: TextStyle(
                               fontSize: 16.sp,
-                              color: Colors.white.withOpacity(0.8),
+                              color: ColorManager.white.withOpacity(0.8),
                               letterSpacing: 1,
                             ),
                           ),
@@ -170,15 +171,15 @@ class _LoginViewState extends State<LoginView>
                             child: Container(
                               padding: EdgeInsets.all(24.w),
                               decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.08),
+                                color: ColorManager.white.withOpacity(0.08),
                                 borderRadius: BorderRadius.circular(24.r),
                                 border: Border.all(
-                                  color: Colors.white.withOpacity(0.2),
+                                  color: ColorManager.white.withOpacity(0.2),
                                   width: 1.5,
                                 ),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Colors.black.withOpacity(0.2),
+                                    color: ColorManager.black.withOpacity(0.2),
                                     blurRadius: 30,
                                     offset: const Offset(0, 10),
                                   ),
