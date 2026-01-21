@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:bloc/bloc.dart';
 import 'package:propertybooking/core/utils/enums/enums_state.dart';
 import 'package:propertybooking/features/auth/data/models/user_model.dart';
@@ -16,7 +18,7 @@ class AuthCubitCubit extends Cubit<AuthCubitState> {
       (failure) {
         emit(state.copyWith(loginState: EnumState.failure));
       },
-      (userModel) {
+      (userModel) async {
         // Check if items list is empty (user not found)
         if (userModel.items == null || userModel.items!.isEmpty) {
           emit(
@@ -52,7 +54,7 @@ class AuthCubitCubit extends Cubit<AuthCubitState> {
         );
 
         // Call postActivity after successful login
-        postActivity(userModel.items![0].empCode ?? 0);
+        await postActivity(userModel.items![0].empCode ?? 0);
       },
     );
   }

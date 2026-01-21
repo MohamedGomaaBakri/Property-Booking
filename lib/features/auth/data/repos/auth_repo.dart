@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:developer';
+
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:geolocator/geolocator.dart';
@@ -51,13 +54,20 @@ class AuthRepo {
         "longitude": position?.longitude,
       };
 
-      print('data loginData $loginData');
-      await apiService.post(
+      final response = await apiService.post(
         endPoint: ApiConstants.getAccessInfo,
-        data: loginData,
+        headers: {'Content-Type': 'application/json'},
+        data: jsonEncode(loginData),
       );
+      if (response.statusCode != 200 && response.statusCode != 201) {
+        log('Failed to post login data. Status code: ${response.statusCode}');
+        log(' ${response.data}', name: "Response Body:");
+      } else {
+        log(' ${response.data}', name: "Response Body:");
+        log('Login activity posted successfully!');
+      }
     } catch (e) {
-      print("Could not post activity data: $e");
+      log("Could not post activity data: $e");
     }
   }
 }
