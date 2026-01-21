@@ -12,13 +12,18 @@ class ApiService {
     return response.data;
   }
 
-  Future<Map<String, dynamic>> post({
+  Future<Response> post({
     required String endPoint,
-    Map<String, dynamic>? data,
+    Object? data,
     BuildContext? context,
+    required Map<String, String> headers,
   }) async {
-    var response = await _dio.post(endPoint, data: data);
-    return response.data;
+    var response = await _dio.post(
+      endPoint,
+      data: data,
+      options: Options(headers: {'Content-Type': 'application/json'}),
+    );
+    return response;
   }
 
   Future<Map<String, dynamic>> put({
