@@ -32,15 +32,15 @@ class LanguageToggleButton extends StatelessWidget {
                     vertical: 10.h,
                   ),
                   decoration: BoxDecoration(
-                    color: ColorManager.white.withOpacity(0.15),
+                    color: ColorManager.white.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(12.r),
                     border: Border.all(
-                      color: ColorManager.white.withOpacity(0.3),
+                      color: ColorManager.white.withValues(alpha: 0.3),
                       width: 1.5,
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: ColorManager.black.withOpacity(0.1),
+                        color: ColorManager.black.withValues(alpha: 0.1),
                         blurRadius: 10,
                         offset: const Offset(0, 4),
                       ),
@@ -49,7 +49,11 @@ class LanguageToggleButton extends StatelessWidget {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.language, color: ColorManager.white, size: 20.sp),
+                      Icon(
+                        Icons.language,
+                        color: ColorManager.white,
+                        size: 20.sp,
+                      ),
                       SizedBox(width: 8.w),
                       AnimatedSwitcher(
                         duration: const Duration(milliseconds: 300),
