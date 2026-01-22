@@ -5,9 +5,12 @@ import 'package:propertybooking/core/utils/services/service_locator.dart';
 import 'package:propertybooking/features/home/data/datasource/home_datasource.dart';
 import 'package:propertybooking/features/home/data/models/building_model.dart';
 import 'package:propertybooking/features/home/data/models/unit_model.dart';
+import 'package:propertybooking/features/home/data/models/building_photo_model.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import '../../../../core/utils/manager/color_manager/color_manager.dart';
 import '../../../../core/utils/manager/assets_manager/image_manager.dart';
 import '../../../../core/widgets/Images/custome_image.dart';
+import '../../../../core/widgets/Images/custome_network_image.dart';
 
 class BuildingView extends StatefulWidget {
   final BuildingModel building;
@@ -20,6 +23,7 @@ class BuildingView extends StatefulWidget {
 
 class _BuildingViewState extends State<BuildingView> {
   late Future<List<UnitModel>> _unitsFuture;
+  late Future<List<BuildingPhotoModel>> _photosFuture;
   late HomeDatasource _homeDatasource;
 
   @override
@@ -27,6 +31,9 @@ class _BuildingViewState extends State<BuildingView> {
     super.initState();
     _homeDatasource = getIt<HomeDatasource>();
     _unitsFuture = _homeDatasource.getUnitsByBuilding(
+      widget.building.buildingCode!,
+    );
+    _photosFuture = _homeDatasource.getAllPhotosByBuilding(
       widget.building.buildingCode!,
     );
   }
@@ -87,8 +94,8 @@ class _BuildingViewState extends State<BuildingView> {
           // Main content
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-            child: FutureBuilder<List<UnitModel>>(
-              future: _unitsFuture,
+            child: FutureBuilder<List<dynamic>>(
+              future: Future.wait([_unitsFuture, _photosFuture]),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return Center(
@@ -191,8 +198,32 @@ class _BuildingViewState extends State<BuildingView> {
                   );
                 }
 
-                final units = snapshot.data!;
-                log('✅ Displaying ${units.length} units', name: 'BuildingView');
+                final units = snapshot.data![0] as List<UnitModel>;
+                final photos = snapshot.data![1] as List<BuildingPhotoModel>;
+                log('✅ Displaying ${units.length} units and ${photos.length} photos', name: 'BuildingView');
+
+                // Group units by model code
+                Map<int, List<UnitModel>> unitsByModel = {};
+                for (var unit in units) {
+                  final modelCode = unit.modelCode?.toInt() ?? 0;
+                  if (!unitsByModel.containsKey(modelCode)) {
+                    unitsByModel[modelCode] = [];
+                  }
+                  unitsByModel[modelCode]!.add(unit);
+                }
+
+                // Group photos by model code
+                Map<int, List<BuildingPhotoModel>> photosByModel = {};
+                for (var photo in photos) {
+                  final modelCode = photo.modelCode ?? 0;
+                  if (!photosByModel.containsKey(modelCode)) {
+                    photosByModel[modelCode] = [];
+                  }
+                  photosByModel[modelCode]!.add(photo);
+                }
+
+                // Get unique model codes from both units and photos
+                final allModelCodes = {...unitsByModel.keys, ...photosByModel.keys}.toList()..sort();
 
                 return RefreshIndicator(
                   color: ColorManager.brandBlue,
@@ -201,51 +232,147 @@ class _BuildingViewState extends State<BuildingView> {
                       _unitsFuture = _homeDatasource.getUnitsByBuilding(
                         widget.building.buildingCode!,
                       );
+                      _photosFuture = _homeDatasource.getAllPhotosByBuilding(
+                        widget.building.buildingCode!,
+                      );
                     });
-                    await _unitsFuture;
+                    await Future.wait([_unitsFuture, _photosFuture]);
                   },
                   child: ListView.builder(
                     padding: EdgeInsets.symmetric(vertical: 8.h),
-                    itemCount: units.length,
+                    itemCount: allModelCodes.length + 1, // +1 for legend
                     itemBuilder: (context, index) {
-                      final unit = units[index];
-                      return Container(
-                        margin: EdgeInsets.symmetric(
-                          vertical: 8.h,
-                          horizontal: 4.w,
-                        ),
-                        padding: EdgeInsets.all(16.w),
-                        decoration: BoxDecoration(
-                          color: ColorManager.white.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(12.r),
-                          border: Border.all(
-                            color: ColorManager.white.withValues(alpha: 0.2),
-                            width: 1.w,
+                      // First item is the color legend
+                      if (index == 0) {
+                        return Container(
+                          margin: EdgeInsets.symmetric(
+                            vertical: 8.h,
+                            horizontal: 4.w,
                           ),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'الوحدة: ${unit.unitCode ?? 'N/A'}',
+                          padding: EdgeInsets.all(16.w),
+                          decoration: BoxDecoration(
+                            color: ColorManager.white.withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(12.r),
+                            border: Border.all(
+                              color: ColorManager.white.withValues(alpha: 0.3),
+                              width: 1.w,
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              _buildLegendItem('متاحة', Color(0xFF2ECC71)),
+                              _buildLegendItem(
+                                'محجوزة',
+                                ColorManager.white.withValues(alpha: 0.1),
+                              ),
+                              _buildLegendItem('مباعة', Color(0xFFE74C3C)),
+                            ],
+                          ),
+                        );
+                      }
+
+                      // Model sections
+                      final modelCode = allModelCodes[index - 1];
+                      final modelUnits = unitsByModel[modelCode] ?? [];
+                      final modelPhotos = photosByModel[modelCode] ?? [];
+                      final modelName = modelPhotos.isNotEmpty
+                          ? modelPhotos.first.modelName ?? 'موديل $modelCode'
+                          : 'موديل $modelCode';
+
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Model Title
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 4.w,
+                              vertical: 16.h,
+                            ),
+                            child: Text(
+                              modelName,
                               style: TextStyle(
-                                fontSize: 18.sp,
+                                fontSize: 22.sp,
                                 fontWeight: FontWeight.bold,
                                 color: ColorManager.white,
+                                shadows: [
+                                  Shadow(
+                                    color: Colors.black.withValues(alpha: 0.5),
+                                    offset: const Offset(0, 2),
+                                    blurRadius: 4,
+                                  ),
+                                ],
                               ),
                             ),
-                            SizedBox(height: 8.h),
-                            Text(
-                              'الحالة: ${_getUnitStatus(unit.unitStatus?.toInt() ?? 4)}',
-                              style: TextStyle(
-                                fontSize: 14.sp,
-                                color: ColorManager.white.withValues(
-                                  alpha: 0.8,
+                          ),
+
+                          // Photo Carousel
+                          if (modelPhotos.isNotEmpty)
+                            CarouselSlider(
+                              options: CarouselOptions(
+                                height: 200.h,
+                                enlargeCenterPage: true,
+                                autoPlay: true,
+                                autoPlayInterval: Duration(seconds: 3),
+                                viewportFraction: 0.9,
+                              ),
+                              items: modelPhotos.map((photo) {
+                                return Container(
+                                  margin: EdgeInsets.symmetric(horizontal: 5.w),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(12.r),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withValues(alpha: 0.3),
+                                        blurRadius: 10,
+                                        offset: const Offset(0, 5),
+                                      ),
+                                    ],
+                                  ),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(12.r),
+                                    child: CustomNetworkImage(
+                                      image: photo.photoURL ?? '',
+                                      placeHolder: ImageManager.splashImage,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                );
+                              }).toList(),
+                            ),
+
+                          SizedBox(height: 16.h),
+
+                          // Unit Cards for this model
+                          ...modelUnits.map((unit) {
+                            final status = unit.unitStatus?.toInt() ?? 4;
+                            return Container(
+                              margin: EdgeInsets.symmetric(
+                                vertical: 8.h,
+                                horizontal: 4.w,
+                              ),
+                              padding: EdgeInsets.all(16.w),
+                              decoration: BoxDecoration(
+                                color: _getStatusColor(status),
+                                borderRadius: BorderRadius.circular(12.r),
+                                border: Border.all(
+                                  color: ColorManager.white.withValues(alpha: 0.2),
+                                  width: 1.w,
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
+                              child: Text(
+                                'الوحدة: ${unit.unitCode ?? 'N/A'}',
+                                style: TextStyle(
+                                  fontSize: 18.sp,
+                                  fontWeight: FontWeight.bold,
+                                  color: ColorManager.white,
+                                ),
+                              ),
+                            );
+                          }).toList(),
+
+                          SizedBox(height: 24.h),
+                        ],
                       );
                     },
                   ),
@@ -256,6 +383,47 @@ class _BuildingViewState extends State<BuildingView> {
         ],
       ),
     );
+  }
+
+  Widget _buildLegendItem(String label, Color color) {
+    return Row(
+      children: [
+        Container(
+          width: 20.w,
+          height: 20.h,
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(4.r),
+            border: Border.all(
+              color: ColorManager.white.withValues(alpha: 0.3),
+              width: 1.w,
+            ),
+          ),
+        ),
+        SizedBox(width: 8.w),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 14.sp,
+            color: ColorManager.white,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Color _getStatusColor(int status) {
+    switch (status) {
+      case 0: // متاحة - Available (Green)
+        return Color(0xFF2ECC71).withValues(alpha: 0.3);
+      case 1: // محجوزة - Reserved (White/Default)
+        return ColorManager.white.withValues(alpha: 0.1);
+      case 3: // مباعة - Sold (Red)
+        return Color(0xFFE74C3C).withValues(alpha: 0.3);
+      default:
+        return ColorManager.white.withValues(alpha: 0.1);
+    }
   }
 
   String _getUnitStatus(int? status) {

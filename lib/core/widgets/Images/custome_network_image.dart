@@ -35,7 +35,7 @@ class CustomNetworkImage extends StatelessWidget {
       errorWidget: (context, url, error) {
         log(error.toString(), name: "error at CachedNetworkImage");
         return CustomImage(
-          image: ImageManager.onboardingImage,
+          image: ImageManager.building1Image,
           fit: fit ?? BoxFit.cover,
         );
       },
