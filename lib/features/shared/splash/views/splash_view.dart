@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:propertybooking/core/utils/manager/assets_manager/image_manager.dart';
 import 'package:propertybooking/core/utils/navigation/navigation_context_extension.dart';
 import 'package:propertybooking/core/utils/navigation/router_path.dart';
 import 'package:propertybooking/core/widgets/Images/custome_image.dart';
+
+import '../../../../core/utils/manager/color_manager/color_manager.dart';
 
 class SplashView extends StatefulWidget {
   const SplashView({super.key});
@@ -38,23 +41,34 @@ class _SplashViewState extends State<SplashView> {
               children: [
                 // App Icon - يمكنك تغيير الأيقونة حسب رغبتك
                 Container(
-                  width: 120,
-                  height: 120,
+                  width: 100.w,
+                  height: 100.h,
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.9),
-                    borderRadius: BorderRadius.circular(30),
+                    color: ColorManager.white.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(25.r),
+                    border: Border.all(
+                      color: ColorManager.white.withValues(alpha: 0.3),
+                      width: 2,
+                    ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.2),
+                        color: ColorManager.brandBlue.withValues(alpha: 0.3),
                         blurRadius: 20,
                         spreadRadius: 5,
                       ),
                     ],
                   ),
-                  child: Icon(
-                    Icons.home_work_rounded,
-                    size: 70,
-                    color: Color(0xFF1A4D6D),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(
+                      23.r,
+                    ), // Slightly smaller than container radius
+                    child: Container(
+                      color: ColorManager.white.withValues(alpha: 0.15),
+                      child: CustomImage(
+                        image: ImageManager.logoImage,
+                        fit: BoxFit.fill,
+                      ),
+                    ),
                   ),
                 ),
 
@@ -69,7 +83,7 @@ class _SplashViewState extends State<SplashView> {
                     color: Colors.white,
                     shadows: [
                       Shadow(
-                        color: Colors.black.withOpacity(0.3),
+                        color: Colors.black.withValues(alpha: 0.3),
                         offset: Offset(0, 2),
                         blurRadius: 8,
                       ),
@@ -84,11 +98,11 @@ class _SplashViewState extends State<SplashView> {
                   'Find Your Dream Property',
                   style: TextStyle(
                     fontSize: 16,
-                    color: Colors.white.withOpacity(0.9),
+                    color: Colors.white.withValues(alpha: 0.9),
                     letterSpacing: 1.2,
                     shadows: [
                       Shadow(
-                        color: Colors.black.withOpacity(0.3),
+                        color: Colors.black.withValues(alpha: 0.3),
                         offset: Offset(0, 1),
                         blurRadius: 4,
                       ),
