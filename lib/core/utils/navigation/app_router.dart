@@ -2,7 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:propertybooking/core/utils/navigation/router_path.dart';
 import 'package:propertybooking/features/auth/presentation/views/login_view.dart';
 import 'package:propertybooking/features/home/presentation/views/home_view.dart';
+import 'package:propertybooking/features/home/presentation/views/land_view.dart';
+import 'package:propertybooking/features/home/presentation/views/building_view.dart';
 import 'package:propertybooking/features/shared/splash/views/splash_view.dart';
+
+import '../../../features/auth/data/models/user_model.dart';
+import '../../../features/home/data/models/project_model.dart';
+import '../../../features/home/data/models/building_model.dart';
+import '../../../features/home/data/datasource/home_datasource.dart';
 
 class AppRouter {
   Route? generateRoute(RouteSettings settings) {
@@ -23,7 +30,23 @@ class AppRouter {
       case RouterPath.homeView:
         return MaterialPageRoute(
           builder: (context) {
-            return const HomeView();
+            return HomeView(userModel: arguments as UserModel);
+          },
+        );
+      case RouterPath.landView:
+        return MaterialPageRoute(
+          builder: (context) {
+            final args = arguments as Map<String, dynamic>;
+            return LandView(
+              project: args['project'] as ProjectModel,
+              homeDatasource: args['homeDatasource'] as HomeDatasource,
+            );
+          },
+        );
+      case RouterPath.buildingView:
+        return MaterialPageRoute(
+          builder: (context) {
+            return BuildingView(building: arguments as BuildingModel);
           },
         );
     }
