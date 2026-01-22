@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:propertybooking/core/utils/navigation/router_path.dart';
 import 'package:propertybooking/features/auth/presentation/views/login_view.dart';
+import 'package:propertybooking/features/home/presentation/views/home_view.dart';
 import 'package:propertybooking/features/shared/splash/views/splash_view.dart';
 
 class AppRouter {
@@ -17,6 +18,12 @@ class AppRouter {
         return MaterialPageRoute(
           builder: (context) {
             return const LoginView();
+          },
+        );
+      case RouterPath.homeView:
+        return MaterialPageRoute(
+          builder: (context) {
+            return const HomeView();
           },
         );
     }

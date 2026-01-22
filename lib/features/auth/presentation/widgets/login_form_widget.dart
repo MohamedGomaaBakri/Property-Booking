@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:propertybooking/core/utils/enums/enums_state.dart';
+import 'package:propertybooking/core/utils/navigation/navigation_context_extension.dart';
 import 'package:propertybooking/features/auth/presentation/manager/auth_cubit/auth_cubit_cubit.dart';
 import 'package:propertybooking/l10n/app_localizations.dart';
 import 'package:propertybooking/features/auth/presentation/widgets/custom_login_text_field.dart';
 import 'package:propertybooking/features/auth/presentation/widgets/custom_login_button.dart';
 import 'package:propertybooking/features/auth/presentation/widgets/error_dialog.dart';
+
+import '../../../../core/utils/navigation/router_path.dart';
 
 class LoginFormWidget extends StatefulWidget {
   const LoginFormWidget({super.key});
@@ -60,6 +63,10 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
             message: errorMessage,
             buttonText: l10n.tryAgain,
           );
+        }
+        if (state.loginState == EnumState.success) {
+          context.pushNamed(RouterPath.homeView);
+          // context.pushReplacementNamed(RouterPath.loginView);
         }
       },
       builder: (context, state) {
