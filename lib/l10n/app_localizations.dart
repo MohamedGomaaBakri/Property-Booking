@@ -146,11 +146,11 @@ abstract class AppLocalizations {
   /// **'Password is required'**
   String get passwordRequired;
 
-  /// No description provided for @welcomeBack.
+  /// No description provided for @logoText.
   ///
   /// In en, this message translates to:
-  /// **'Welcome Back'**
-  String get welcomeBack;
+  /// **'Arab Investors \n for Projects management'**
+  String get logoText;
 
   /// No description provided for @propertyBooking.
   ///
@@ -187,6 +187,108 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Try Again'**
   String get tryAgain;
+
+  /// No description provided for @welcomeBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome back,'**
+  String get welcomeBack;
+
+  /// No description provided for @guest.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest'**
+  String get guest;
+
+  /// No description provided for @propertyManager.
+  ///
+  /// In en, this message translates to:
+  /// **'Property Manager'**
+  String get propertyManager;
+
+  /// No description provided for @availableZones.
+  ///
+  /// In en, this message translates to:
+  /// **'Available Zones'**
+  String get availableZones;
+
+  /// No description provided for @errorLoadingZones.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading zones'**
+  String get errorLoadingZones;
+
+  /// No description provided for @pleaseTryAgainLater.
+  ///
+  /// In en, this message translates to:
+  /// **'Please try again later'**
+  String get pleaseTryAgainLater;
+
+  /// No description provided for @retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get retry;
+
+  /// No description provided for @noZonesAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No zones available'**
+  String get noZonesAvailable;
+
+  /// No description provided for @checkBackLaterForUpdates.
+  ///
+  /// In en, this message translates to:
+  /// **'Check back later for updates'**
+  String get checkBackLaterForUpdates;
+
+  /// No description provided for @projects.
+  ///
+  /// In en, this message translates to:
+  /// **'Projects'**
+  String get projects;
+
+  /// No description provided for @errorLoadingProjects.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading projects'**
+  String get errorLoadingProjects;
+
+  /// No description provided for @noProjectsAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No projects available'**
+  String get noProjectsAvailable;
+
+  /// No description provided for @noProjectsFoundInZone.
+  ///
+  /// In en, this message translates to:
+  /// **'No projects found in this zone'**
+  String get noProjectsFoundInZone;
+
+  /// No description provided for @unknownZone.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown Zone'**
+  String get unknownZone;
+
+  /// No description provided for @zoneCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Zone Code: '**
+  String get zoneCode;
+
+  /// No description provided for @unknownProject.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown Project'**
+  String get unknownProject;
+
+  /// No description provided for @projectCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Project Code: '**
+  String get projectCode;
 }
 
 class _AppLocalizationsDelegate

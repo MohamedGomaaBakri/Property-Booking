@@ -27,7 +27,7 @@ abstract class Appstyle {
 
   //=====================================
   static TextStyle Text400_16 = TextStyle(
-    color: Colors.black.withOpacity(.66),
+    color: Colors.black.withValues(alpha: .66),
     fontFamily: "Readex Pro",
     fontSize: 16.sp,
     fontWeight: FontWeight.w400,

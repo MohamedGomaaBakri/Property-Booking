@@ -33,7 +33,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get passwordRequired => 'Password is required';
 
   @override
-  String get welcomeBack => 'Welcome Back';
+  String get logoText => 'Arab Investors \n for Projects management';
 
   @override
   String get propertyBooking => 'Property Booking';
@@ -52,4 +52,55 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tryAgain => 'Try Again';
+
+  @override
+  String get welcomeBack => 'Welcome back,';
+
+  @override
+  String get guest => 'Guest';
+
+  @override
+  String get propertyManager => 'Property Manager';
+
+  @override
+  String get availableZones => 'Available Zones';
+
+  @override
+  String get errorLoadingZones => 'Error loading zones';
+
+  @override
+  String get pleaseTryAgainLater => 'Please try again later';
+
+  @override
+  String get retry => 'Retry';
+
+  @override
+  String get noZonesAvailable => 'No zones available';
+
+  @override
+  String get checkBackLaterForUpdates => 'Check back later for updates';
+
+  @override
+  String get projects => 'Projects';
+
+  @override
+  String get errorLoadingProjects => 'Error loading projects';
+
+  @override
+  String get noProjectsAvailable => 'No projects available';
+
+  @override
+  String get noProjectsFoundInZone => 'No projects found in this zone';
+
+  @override
+  String get unknownZone => 'Unknown Zone';
+
+  @override
+  String get zoneCode => 'Zone Code: ';
+
+  @override
+  String get unknownProject => 'Unknown Project';
+
+  @override
+  String get projectCode => 'Project Code: ';
 }
