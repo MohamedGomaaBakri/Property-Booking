@@ -8,6 +8,8 @@ import 'package:propertybooking/core/utils/networking/api_constants.dart';
 import 'package:propertybooking/core/utils/networking/api_service.dart';
 import 'package:propertybooking/core/utils/services/device_info_service.dart';
 import 'package:propertybooking/features/auth/data/repos/auth_repo.dart';
+import 'package:propertybooking/features/auth/presentation/manager/auth_cubit/auth_cubit_cubit.dart';
+import 'package:propertybooking/features/home/data/datasource/home_datasource.dart';
 
 final getIt = GetIt.instance;
 
@@ -69,5 +71,11 @@ Future<void> setupServiceLocator() async {
 
   getIt.registerLazySingleton<AuthRepo>(
     () => AuthRepo(getIt<ApiService>(), getIt<DeviceInfoProvider>()),
+  );
+  getIt.registerLazySingleton<AuthCubitCubit>(
+    () => AuthCubitCubit(getIt<AuthRepo>()),
+  );
+  getIt.registerLazySingleton<HomeDatasource>(
+    () => HomeDatasource(apiService: getIt<ApiService>()),
   );
 }

@@ -1,6 +1,8 @@
 // shared Network image widget
 // usd CachedNetworkImage package
 
+import 'dart:developer';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:propertybooking/core/utils/manager/assets_manager/image_manager.dart';
@@ -15,8 +17,10 @@ class CustomNetworkImage extends StatelessWidget {
     this.width,
     this.radius,
     this.color,
+    this.placeHolder,
   });
   final String image;
+  final String? placeHolder;
   final BoxFit? fit;
   final double? height;
   final double? width;
@@ -28,12 +32,15 @@ class CustomNetworkImage extends StatelessWidget {
       height: height,
       width: width,
       imageUrl: image,
-      errorWidget: (context, url, error) => CustomImage(
-        image: ImageManager.onboardingImage,
-        fit: fit ?? BoxFit.cover,
-      ),
+      errorWidget: (context, url, error) {
+        log(error.toString(), name: "error at CachedNetworkImage");
+        return CustomImage(
+          image: ImageManager.onboardingImage,
+          fit: fit ?? BoxFit.cover,
+        );
+      },
       placeholder: (context, url) =>
-          CustomImage(image: ImageManager.onboardingImage),
+          CustomImage(image: placeHolder ?? ImageManager.onboardingImage),
       fit: fit ?? BoxFit.cover,
     );
 
