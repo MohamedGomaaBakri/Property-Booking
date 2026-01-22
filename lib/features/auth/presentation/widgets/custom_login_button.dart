@@ -67,7 +67,7 @@ class _CustomLoginButtonState extends State<CustomLoginButton>
             borderRadius: BorderRadius.circular(16.r),
             boxShadow: [
               BoxShadow(
-                color: ColorManager.brandBlue.withOpacity(0.4),
+                color: ColorManager.brandBlue.withValues(alpha: 0.4),
                 blurRadius: 20,
                 offset: const Offset(0, 8),
               ),

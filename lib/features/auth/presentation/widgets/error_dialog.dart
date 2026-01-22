@@ -26,7 +26,7 @@ class ErrorDialog extends StatefulWidget {
     return showDialog(
       context: context,
       barrierDismissible: false,
-      barrierColor: Colors.black.withOpacity(0.5),
+      barrierColor: Colors.black.withValues(alpha: 0.5),
       builder: (context) =>
           ErrorDialog(title: title, message: message, buttonText: buttonText),
     );
@@ -89,14 +89,14 @@ class _ErrorDialogState extends State<ErrorDialog>
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: [
-                    const Color(0xFFFF6B6B).withOpacity(0.95),
-                    const Color(0xFFEE5A6F).withOpacity(0.95),
+                    const Color(0xFFFF6B6B).withValues(alpha: 0.95),
+                    const Color(0xFFEE5A6F).withValues(alpha: 0.95),
                   ],
                 ),
                 borderRadius: BorderRadius.circular(24.r),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFFFF6B6B).withOpacity(0.4),
+                    color: const Color(0xFFFF6B6B).withValues(alpha: 0.4),
                     blurRadius: 30,
                     offset: const Offset(0, 10),
                   ),
@@ -112,13 +112,13 @@ class _ErrorDialogState extends State<ErrorDialog>
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                         colors: [
-                          Colors.white.withOpacity(0.2),
-                          Colors.white.withOpacity(0.1),
+                          Colors.white.withValues(alpha: 0.2),
+                          Colors.white.withValues(alpha: 0.1),
                         ],
                       ),
                       borderRadius: BorderRadius.circular(24.r),
                       border: Border.all(
-                        color: Colors.white.withOpacity(0.3),
+                        color: Colors.white.withValues(alpha: 0.3),
                         width: 1.5,
                       ),
                     ),
@@ -138,11 +138,13 @@ class _ErrorDialogState extends State<ErrorDialog>
                                 width: 80.w,
                                 height: 80.w,
                                 decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.3),
+                                  color: Colors.white.withValues(alpha: 0.3),
                                   shape: BoxShape.circle,
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Colors.white.withOpacity(0.3),
+                                      color: Colors.white.withValues(
+                                        alpha: 0.3,
+                                      ),
                                       blurRadius: 20,
                                       spreadRadius: 5,
                                     ),
@@ -179,7 +181,7 @@ class _ErrorDialogState extends State<ErrorDialog>
                           widget.message,
                           style: TextStyle(
                             fontSize: 16.sp,
-                            color: Colors.white.withOpacity(0.95),
+                            color: Colors.white.withValues(alpha: 0.95),
                             height: 1.5,
                           ),
                           textAlign: TextAlign.center,

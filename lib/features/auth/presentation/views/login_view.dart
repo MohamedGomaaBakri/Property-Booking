@@ -72,8 +72,8 @@ class _LoginViewState extends State<LoginView>
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  ColorManager.black.withOpacity(0.6),
-                  ColorManager.black.withOpacity(0.8),
+                  ColorManager.black.withValues(alpha: 0.6),
+                  ColorManager.black.withValues(alpha: 0.8),
                 ],
               ),
             ),
@@ -99,24 +99,33 @@ class _LoginViewState extends State<LoginView>
                         width: 100.w,
                         height: 100.h,
                         decoration: BoxDecoration(
-                          color: ColorManager.white.withOpacity(0.15),
+                          color: ColorManager.white.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(25.r),
                           border: Border.all(
-                            color: ColorManager.white.withOpacity(0.3),
+                            color: ColorManager.white.withValues(alpha: 0.3),
                             width: 2,
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: ColorManager.brandBlue.withOpacity(0.3),
+                              color: ColorManager.brandBlue.withValues(
+                                alpha: 0.3,
+                              ),
                               blurRadius: 20,
                               spreadRadius: 5,
                             ),
                           ],
                         ),
-                        child: Icon(
-                          Icons.home_work_rounded,
-                          size: 55.sp,
-                          color: ColorManager.white,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(
+                            23.r,
+                          ), // Slightly smaller than container radius
+                          child: Container(
+                            color: ColorManager.white.withValues(alpha: 0.15),
+                            child: CustomImage(
+                              image: ImageManager.logoImage,
+                              fit: BoxFit.fill,
+                            ),
+                          ),
                         ),
                       ),
                     ),
@@ -129,7 +138,8 @@ class _LoginViewState extends State<LoginView>
                       child: Column(
                         children: [
                           Text(
-                            l10n.welcomeBack,
+                            l10n.logoText,
+                            textAlign: TextAlign.center,
                             style: TextStyle(
                               fontSize: 28.sp,
                               fontWeight: FontWeight.bold,
@@ -137,7 +147,7 @@ class _LoginViewState extends State<LoginView>
                               letterSpacing: 0.5,
                               shadows: [
                                 Shadow(
-                                  color: Colors.black.withOpacity(0.3),
+                                  color: Colors.black.withValues(alpha: 0.3),
                                   offset: const Offset(0, 2),
                                   blurRadius: 8,
                                 ),
@@ -149,7 +159,7 @@ class _LoginViewState extends State<LoginView>
                             l10n.propertyBooking,
                             style: TextStyle(
                               fontSize: 16.sp,
-                              color: ColorManager.white.withOpacity(0.8),
+                              color: ColorManager.white.withValues(alpha: 0.8),
                               letterSpacing: 1,
                             ),
                           ),
@@ -171,15 +181,21 @@ class _LoginViewState extends State<LoginView>
                             child: Container(
                               padding: EdgeInsets.all(24.w),
                               decoration: BoxDecoration(
-                                color: ColorManager.white.withOpacity(0.08),
+                                color: ColorManager.white.withValues(
+                                  alpha: 0.08,
+                                ),
                                 borderRadius: BorderRadius.circular(24.r),
                                 border: Border.all(
-                                  color: ColorManager.white.withOpacity(0.2),
+                                  color: ColorManager.white.withValues(
+                                    alpha: 0.2,
+                                  ),
                                   width: 1.5,
                                 ),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: ColorManager.black.withOpacity(0.2),
+                                    color: ColorManager.black.withValues(
+                                      alpha: 0.2,
+                                    ),
                                     blurRadius: 30,
                                     offset: const Offset(0, 10),
                                   ),
