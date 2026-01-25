@@ -79,10 +79,6 @@ class _LoginViewState extends State<LoginView>
             ),
           ),
 
-          // Language Toggle Button
-          const LanguageToggleButton(),
-
-          // Main Content
           SafeArea(
             child: SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
@@ -107,7 +103,7 @@ class _LoginViewState extends State<LoginView>
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: ColorManager.brandBlue.withValues(
+                              color: ColorManager.availableColor.withValues(
                                 alpha: 0.3,
                               ),
                               blurRadius: 20,
@@ -214,6 +210,9 @@ class _LoginViewState extends State<LoginView>
               ),
             ),
           ),
+
+          // Language Toggle Button (placed last to be on top)
+          const LanguageToggleButton(),
         ],
       ),
     );

@@ -87,4 +87,8 @@ class AuthCubitCubit extends Cubit<AuthCubitState> {
     await authRepo.postActivity(userCode);
     emit(state.copyWith(postActivityState: EnumState.success));
   }
+
+  void logout() {
+    emit(AuthCubitState());
+  }
 }

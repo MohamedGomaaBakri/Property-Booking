@@ -15,69 +15,72 @@ class LanguageToggleButton extends StatelessWidget {
         final isArabic = languageProvider.isArabic;
 
         return Positioned(
-          top: 50.h,
-          right: isArabic ? 20.w : null,
-          left: isArabic ? null : 20.w,
-          child: GestureDetector(
-            onTap: () {
-              languageProvider.toggleLanguage();
-            },
-            child: ClipRRect(
+          top: 60.h,
+          right: 20.w,
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
               borderRadius: BorderRadius.circular(12.r),
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                child: Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 16.w,
-                    vertical: 10.h,
-                  ),
-                  decoration: BoxDecoration(
-                    color: ColorManager.white.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(12.r),
-                    border: Border.all(
-                      color: ColorManager.white.withValues(alpha: 0.3),
-                      width: 1.5,
+              onTap: () {
+                languageProvider.toggleLanguage();
+              },
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12.r),
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                  child: Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 16.w,
+                      vertical: 10.h,
                     ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: ColorManager.black.withValues(alpha: 0.1),
-                        blurRadius: 10,
-                        offset: const Offset(0, 4),
+                    decoration: BoxDecoration(
+                      color: ColorManager.availableColor.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(12.r),
+                      border: Border.all(
+                        color: ColorManager.availableColor.withValues(alpha: 0.5),
+                        width: 1.w,
                       ),
-                    ],
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.language,
-                        color: ColorManager.white,
-                        size: 20.sp,
-                      ),
-                      SizedBox(width: 8.w),
-                      AnimatedSwitcher(
-                        duration: const Duration(milliseconds: 300),
-                        transitionBuilder: (child, animation) {
-                          return FadeTransition(
-                            opacity: animation,
-                            child: ScaleTransition(
-                              scale: animation,
-                              child: child,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.2),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.language,
+                          color: ColorManager.availableColor,
+                          size: 20.sp,
+                        ),
+                        SizedBox(width: 8.w),
+                        AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 300),
+                          transitionBuilder: (child, animation) {
+                            return FadeTransition(
+                              opacity: animation,
+                              child: ScaleTransition(
+                                scale: animation,
+                                child: child,
+                              ),
+                            );
+                          },
+                          child: Text(
+                            isArabic ? 'EN' : 'AR',
+                            key: ValueKey(isArabic),
+                            style: TextStyle(
+                              color: ColorManager.availableColor,
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 1,
                             ),
-                          );
-                        },
-                        child: Text(
-                          isArabic ? 'EN' : 'AR',
-                          key: ValueKey(isArabic),
-                          style: TextStyle(
-                            color: ColorManager.white,
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 1,
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),

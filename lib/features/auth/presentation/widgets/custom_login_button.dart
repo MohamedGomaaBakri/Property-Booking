@@ -60,14 +60,17 @@ class _CustomLoginButtonState extends State<CustomLoginButton>
           height: 56.h,
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [ColorManager.brandBlue, ColorManager.brandLightBlue],
+              colors: [
+                ColorManager.availableColor,
+                ColorManager.availableColor.withValues(alpha: 0.8),
+              ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
             borderRadius: BorderRadius.circular(16.r),
             boxShadow: [
               BoxShadow(
-                color: ColorManager.brandBlue.withValues(alpha: 0.4),
+                color: ColorManager.availableColor.withValues(alpha: 0.3),
                 blurRadius: 20,
                 offset: const Offset(0, 8),
               ),
