@@ -103,4 +103,64 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get projectCode => 'Project Code: ';
+
+  @override
+  String get unitDetails => 'Unit Details';
+
+  @override
+  String get buildingName => 'Building Name';
+
+  @override
+  String get modelName => 'Model Name';
+
+  @override
+  String get installment => 'Installment';
+
+  @override
+  String get totalPrice => 'Total Price';
+
+  @override
+  String get levelNo => 'Level No';
+
+  @override
+  String get flatNo => 'Flat No';
+
+  @override
+  String get unitStatus => 'Unit Status';
+
+  @override
+  String get meterPrice => 'Meter Price';
+
+  @override
+  String get notes => 'Notes';
+
+  @override
+  String get notAvailableNow => 'Not Available Now';
+
+  @override
+  String get partnerUnit => 'Partner Unit';
+
+  @override
+  String get installmentValue => 'Installment Value';
+
+  @override
+  String get reserve => 'Reserve';
+
+  @override
+  String get available => 'Available';
+
+  @override
+  String get reserved => 'Reserved';
+
+  @override
+  String get sold => 'Sold';
+
+  @override
+  String get unitArea => 'Unit Area';
+
+  @override
+  String get fullDescription => 'Full Description';
+
+  @override
+  String get logout => 'Logout';
 }

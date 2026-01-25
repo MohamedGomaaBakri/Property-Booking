@@ -289,6 +289,126 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Project Code: '**
   String get projectCode;
+
+  /// No description provided for @unitDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Unit Details'**
+  String get unitDetails;
+
+  /// No description provided for @buildingName.
+  ///
+  /// In en, this message translates to:
+  /// **'Building Name'**
+  String get buildingName;
+
+  /// No description provided for @modelName.
+  ///
+  /// In en, this message translates to:
+  /// **'Model Name'**
+  String get modelName;
+
+  /// No description provided for @installment.
+  ///
+  /// In en, this message translates to:
+  /// **'Installment'**
+  String get installment;
+
+  /// No description provided for @totalPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Price'**
+  String get totalPrice;
+
+  /// No description provided for @levelNo.
+  ///
+  /// In en, this message translates to:
+  /// **'Level No'**
+  String get levelNo;
+
+  /// No description provided for @flatNo.
+  ///
+  /// In en, this message translates to:
+  /// **'Flat No'**
+  String get flatNo;
+
+  /// No description provided for @unitStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Unit Status'**
+  String get unitStatus;
+
+  /// No description provided for @meterPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Meter Price'**
+  String get meterPrice;
+
+  /// No description provided for @notes.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes'**
+  String get notes;
+
+  /// No description provided for @notAvailableNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Not Available Now'**
+  String get notAvailableNow;
+
+  /// No description provided for @partnerUnit.
+  ///
+  /// In en, this message translates to:
+  /// **'Partner Unit'**
+  String get partnerUnit;
+
+  /// No description provided for @installmentValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Installment Value'**
+  String get installmentValue;
+
+  /// No description provided for @reserve.
+  ///
+  /// In en, this message translates to:
+  /// **'Reserve'**
+  String get reserve;
+
+  /// No description provided for @available.
+  ///
+  /// In en, this message translates to:
+  /// **'Available'**
+  String get available;
+
+  /// No description provided for @reserved.
+  ///
+  /// In en, this message translates to:
+  /// **'Reserved'**
+  String get reserved;
+
+  /// No description provided for @sold.
+  ///
+  /// In en, this message translates to:
+  /// **'Sold'**
+  String get sold;
+
+  /// No description provided for @unitArea.
+  ///
+  /// In en, this message translates to:
+  /// **'Unit Area'**
+  String get unitArea;
+
+  /// No description provided for @fullDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Full Description'**
+  String get fullDescription;
+
+  /// No description provided for @logout.
+  ///
+  /// In en, this message translates to:
+  /// **'Logout'**
+  String get logout;
 }
 
 class _AppLocalizationsDelegate

@@ -96,11 +96,71 @@ class AppLocalizationsAr extends AppLocalizations {
   String get unknownZone => 'منطقة غير معروفة';
 
   @override
-  String get zoneCode => 'كود المنطقة: ';
+  String get zoneCode => 'كود المنطقة : ';
 
   @override
   String get unknownProject => 'مشروع غير معروف';
 
   @override
-  String get projectCode => 'كود المشروع: ';
+  String get projectCode => 'كود المشروع : ';
+
+  @override
+  String get unitDetails => 'تفاصيل الوحدة';
+
+  @override
+  String get buildingName => 'اسم المبنى :';
+
+  @override
+  String get modelName => 'اسم النموذج :';
+
+  @override
+  String get installment => 'القسط :';
+
+  @override
+  String get totalPrice => 'اجمالي السعر :';
+
+  @override
+  String get levelNo => 'الدور :';
+
+  @override
+  String get flatNo => 'رقم الشقة :';
+
+  @override
+  String get unitStatus => 'حالة الوحدة :';
+
+  @override
+  String get meterPrice => 'سعر المتر :';
+
+  @override
+  String get notes => 'ملاحظات :';
+
+  @override
+  String get notAvailableNow => 'غير متاح الأن';
+
+  @override
+  String get partnerUnit => 'خاص بالشريك';
+
+  @override
+  String get installmentValue => 'قيمة القسط :';
+
+  @override
+  String get reserve => 'حجز';
+
+  @override
+  String get available => 'متاحة';
+
+  @override
+  String get reserved => 'محجوزة';
+
+  @override
+  String get sold => 'مباعة';
+
+  @override
+  String get unitArea => 'المساحة :';
+
+  @override
+  String get fullDescription => 'قيمة الوصف الكامل :';
+
+  @override
+  String get logout => 'Logout';
 }
