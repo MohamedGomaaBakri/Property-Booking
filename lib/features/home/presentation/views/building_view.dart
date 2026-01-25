@@ -11,6 +11,7 @@ import '../../../../core/utils/manager/color_manager/color_manager.dart';
 import '../../../../core/utils/manager/assets_manager/image_manager.dart';
 import '../../../../core/widgets/Images/custome_image.dart';
 import '../../../../core/widgets/Images/custome_network_image.dart';
+import '../widgets/unit_card.dart';
 
 class BuildingView extends StatefulWidget {
   final BuildingModel building;
@@ -200,7 +201,10 @@ class _BuildingViewState extends State<BuildingView> {
 
                 final units = snapshot.data![0] as List<UnitModel>;
                 final photos = snapshot.data![1] as List<BuildingPhotoModel>;
-                log('✅ Displaying ${units.length} units and ${photos.length} photos', name: 'BuildingView');
+                log(
+                  '✅ Displaying ${units.length} units and ${photos.length} photos',
+                  name: 'BuildingView',
+                );
 
                 // Group units by model code
                 Map<int, List<UnitModel>> unitsByModel = {};
@@ -223,7 +227,10 @@ class _BuildingViewState extends State<BuildingView> {
                 }
 
                 // Get unique model codes from both units and photos
-                final allModelCodes = {...unitsByModel.keys, ...photosByModel.keys}.toList()..sort();
+                final allModelCodes = {
+                  ...unitsByModel.keys,
+                  ...photosByModel.keys,
+                }.toList()..sort();
 
                 return RefreshIndicator(
                   color: ColorManager.brandBlue,
@@ -323,7 +330,9 @@ class _BuildingViewState extends State<BuildingView> {
                                     borderRadius: BorderRadius.circular(12.r),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: Colors.black.withValues(alpha: 0.3),
+                                        color: Colors.black.withValues(
+                                          alpha: 0.3,
+                                        ),
                                         blurRadius: 10,
                                         offset: const Offset(0, 5),
                                       ),
@@ -344,32 +353,7 @@ class _BuildingViewState extends State<BuildingView> {
                           SizedBox(height: 16.h),
 
                           // Unit Cards for this model
-                          ...modelUnits.map((unit) {
-                            final status = unit.unitStatus?.toInt() ?? 4;
-                            return Container(
-                              margin: EdgeInsets.symmetric(
-                                vertical: 8.h,
-                                horizontal: 4.w,
-                              ),
-                              padding: EdgeInsets.all(16.w),
-                              decoration: BoxDecoration(
-                                color: _getStatusColor(status),
-                                borderRadius: BorderRadius.circular(12.r),
-                                border: Border.all(
-                                  color: ColorManager.white.withValues(alpha: 0.2),
-                                  width: 1.w,
-                                ),
-                              ),
-                              child: Text(
-                                'الوحدة: ${unit.unitCode ?? 'N/A'}',
-                                style: TextStyle(
-                                  fontSize: 18.sp,
-                                  fontWeight: FontWeight.bold,
-                                  color: ColorManager.white,
-                                ),
-                              ),
-                            );
-                          }).toList(),
+                          ...modelUnits.map((unit) => UnitCard(unit: unit)).toList(),
 
                           SizedBox(height: 24.h),
                         ],
@@ -413,29 +397,4 @@ class _BuildingViewState extends State<BuildingView> {
     );
   }
 
-  Color _getStatusColor(int status) {
-    switch (status) {
-      case 0: // متاحة - Available (Green)
-        return Color(0xFF2ECC71).withValues(alpha: 0.3);
-      case 1: // محجوزة - Reserved (White/Default)
-        return ColorManager.white.withValues(alpha: 0.1);
-      case 3: // مباعة - Sold (Red)
-        return Color(0xFFE74C3C).withValues(alpha: 0.3);
-      default:
-        return ColorManager.white.withValues(alpha: 0.1);
-    }
-  }
-
-  String _getUnitStatus(int? status) {
-    switch (status) {
-      case 0:
-        return 'متاحة';
-      case 1:
-        return 'محجوزة';
-      case 3:
-        return 'مباعة';
-      default:
-        return 'غير معروف';
-    }
-  }
 }
