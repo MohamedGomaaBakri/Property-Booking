@@ -1,6 +1,10 @@
 class UnitModel {
   num? buildingCode;
+  String? buildingNameA;
   String? unitCode;
+  String? modelName;
+  num? calcInstValUnit;
+  num? totPrice;
   num? modelCode;
   num? levelNo;
   String? flatNo;
@@ -12,7 +16,7 @@ class UnitModel {
   dynamic activityCode;
   num? unitArea;
   dynamic actUnitArea;
-  num? meterPriceInst;
+  double? meterPriceInst;
   dynamic meterPriceCash;
   dynamic instMonths;
   dynamic instNo;
@@ -30,7 +34,7 @@ class UnitModel {
   dynamic faceCode;
   dynamic levelStart;
   dynamic rentPrice;
-  dynamic instValUnit;
+  dynamic instValUnitCol;
   num? unitSerial;
   dynamic electricalMeter;
   dynamic meterPrice;
@@ -41,7 +45,11 @@ class UnitModel {
 
   UnitModel({
     this.buildingCode,
+    this.buildingNameA,
     this.unitCode,
+    this.modelName,
+    this.calcInstValUnit,
+    this.totPrice,
     this.modelCode,
     this.levelNo,
     this.flatNo,
@@ -71,7 +79,7 @@ class UnitModel {
     this.faceCode,
     this.levelStart,
     this.rentPrice,
-    this.instValUnit,
+    this.instValUnitCol,
     this.unitSerial,
     this.electricalMeter,
     this.meterPrice,
@@ -83,7 +91,11 @@ class UnitModel {
 
   UnitModel.fromJson(Map<String, dynamic> json) {
     buildingCode = json['building_code'];
+    buildingNameA = json['building_name_a'];
     unitCode = json['unit_code'];
+    modelName = json['model_name'];
+    calcInstValUnit = json['calc_inst_val_unit'];
+    totPrice = json['tot_price'];
     modelCode = json['model_code'];
     levelNo = json['level_no'];
     flatNo = json['flat_no'];
@@ -113,7 +125,7 @@ class UnitModel {
     faceCode = json['face_code'];
     levelStart = json['level_start'];
     rentPrice = json['rent_price'];
-    instValUnit = json['inst_val_unit'];
+    instValUnitCol = json['inst_val_unit_col'];
     unitSerial = json['unit_serial'];
     electricalMeter = json['electrical_meter'];
     meterPrice = json['meter_price'];
@@ -126,7 +138,11 @@ class UnitModel {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['building_code'] = buildingCode;
+    data['building_name_a'] = buildingNameA;
     data['unit_code'] = unitCode;
+    data['model_name'] = modelName;
+    data['calc_inst_val_unit'] = calcInstValUnit;
+    data['tot_price'] = totPrice;
     data['model_code'] = modelCode;
     data['level_no'] = levelNo;
     data['flat_no'] = flatNo;
@@ -156,7 +172,7 @@ class UnitModel {
     data['face_code'] = faceCode;
     data['level_start'] = levelStart;
     data['rent_price'] = rentPrice;
-    data['inst_val_unit'] = instValUnit;
+    data['inst_val_unit_col'] = instValUnitCol;
     data['unit_serial'] = unitSerial;
     data['electrical_meter'] = electricalMeter;
     data['meter_price'] = meterPrice;

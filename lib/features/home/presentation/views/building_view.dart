@@ -6,12 +6,10 @@ import 'package:propertybooking/features/home/data/datasource/home_datasource.da
 import 'package:propertybooking/features/home/data/models/building_model.dart';
 import 'package:propertybooking/features/home/data/models/unit_model.dart';
 import 'package:propertybooking/features/home/data/models/building_photo_model.dart';
-import 'package:carousel_slider/carousel_slider.dart';
 import '../../../../core/utils/manager/color_manager/color_manager.dart';
 import '../../../../core/utils/manager/assets_manager/image_manager.dart';
 import '../../../../core/widgets/Images/custome_image.dart';
-import '../../../../core/widgets/Images/custome_network_image.dart';
-import '../widgets/unit_card.dart';
+import '../widgets/model_section.dart';
 
 class BuildingView extends StatefulWidget {
   final BuildingModel building;
@@ -101,7 +99,7 @@ class _BuildingViewState extends State<BuildingView> {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return Center(
                     child: CircularProgressIndicator(
-                      color: ColorManager.brandBlue,
+                      color: ColorManager.availableColor,
                       strokeWidth: 2.0,
                     ),
                   );
@@ -116,7 +114,7 @@ class _BuildingViewState extends State<BuildingView> {
                         Icon(
                           Icons.error_outline,
                           size: 60.sp,
-                          color: ColorManager.errorColor,
+                          color: ColorManager.soldColor,
                         ),
                         SizedBox(height: 16.h),
                         Text(
@@ -145,7 +143,7 @@ class _BuildingViewState extends State<BuildingView> {
                             });
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: ColorManager.brandBlue,
+                            backgroundColor: ColorManager.availableColor,
                             padding: EdgeInsets.symmetric(
                               horizontal: 32.w,
                               vertical: 12.h,
@@ -233,7 +231,7 @@ class _BuildingViewState extends State<BuildingView> {
                 }.toList()..sort();
 
                 return RefreshIndicator(
-                  color: ColorManager.brandBlue,
+                  color: ColorManager.availableColor,
                   onRefresh: () async {
                     setState(() {
                       _unitsFuture = _homeDatasource.getUnitsByBuilding(
@@ -268,12 +266,12 @@ class _BuildingViewState extends State<BuildingView> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
-                              _buildLegendItem('متاحة', Color(0xFF2ECC71)),
+                              _buildLegendItem('متاحة', ColorManager.availableColor),
                               _buildLegendItem(
                                 'محجوزة',
-                                ColorManager.white.withValues(alpha: 0.1),
+                                ColorManager.white.withValues(alpha: 0.15),
                               ),
-                              _buildLegendItem('مباعة', Color(0xFFE74C3C)),
+                              _buildLegendItem('مباعة', ColorManager.soldColor),
                             ],
                           ),
                         );
@@ -287,76 +285,10 @@ class _BuildingViewState extends State<BuildingView> {
                           ? modelPhotos.first.modelName ?? 'موديل $modelCode'
                           : 'موديل $modelCode';
 
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Model Title
-                          Padding(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 4.w,
-                              vertical: 16.h,
-                            ),
-                            child: Text(
-                              modelName,
-                              style: TextStyle(
-                                fontSize: 22.sp,
-                                fontWeight: FontWeight.bold,
-                                color: ColorManager.white,
-                                shadows: [
-                                  Shadow(
-                                    color: Colors.black.withValues(alpha: 0.5),
-                                    offset: const Offset(0, 2),
-                                    blurRadius: 4,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-
-                          // Photo Carousel
-                          if (modelPhotos.isNotEmpty)
-                            CarouselSlider(
-                              options: CarouselOptions(
-                                height: 200.h,
-                                enlargeCenterPage: true,
-                                autoPlay: true,
-                                autoPlayInterval: Duration(seconds: 3),
-                                viewportFraction: 0.9,
-                              ),
-                              items: modelPhotos.map((photo) {
-                                return Container(
-                                  margin: EdgeInsets.symmetric(horizontal: 5.w),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(12.r),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black.withValues(
-                                          alpha: 0.3,
-                                        ),
-                                        blurRadius: 10,
-                                        offset: const Offset(0, 5),
-                                      ),
-                                    ],
-                                  ),
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(12.r),
-                                    child: CustomNetworkImage(
-                                      image: photo.photoURL ?? '',
-                                      placeHolder: ImageManager.splashImage,
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                );
-                              }).toList(),
-                            ),
-
-                          SizedBox(height: 16.h),
-
-                          // Unit Cards for this model
-                          ...modelUnits.map((unit) => UnitCard(unit: unit)).toList(),
-
-                          SizedBox(height: 24.h),
-                        ],
+                      return ModelSection(
+                        modelName: modelName,
+                        units: modelUnits,
+                        photos: modelPhotos,
                       );
                     },
                   ),
@@ -396,5 +328,4 @@ class _BuildingViewState extends State<BuildingView> {
       ],
     );
   }
-
 }

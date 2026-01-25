@@ -1,8 +1,8 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:propertybooking/core/utils/networking/api_service.dart';
 import 'package:propertybooking/core/utils/services/service_locator.dart';
 import 'package:propertybooking/features/auth/presentation/manager/auth_cubit/auth_cubit_cubit.dart';
 import 'package:propertybooking/features/home/data/datasource/home_datasource.dart';
@@ -45,6 +45,66 @@ class _HomeViewState extends State<HomeView> {
       ),
     );
   }
+
+  void _showLogoutDialog(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: ColorManager.black.withValues(alpha: 0.9),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16.r),
+          side: BorderSide(color: ColorManager.availableColor, width: 1.w),
+        ),
+        title: Text(
+          l10n.logout,
+          style: TextStyle(
+            color: ColorManager.availableColor,
+            fontWeight: FontWeight.bold,
+          ),
+          textAlign: TextAlign.center,
+        ),
+        content: Text(
+          isArabic
+              ? 'هل أنت متأكد من تسجيل الخروج؟'
+              : 'Are you sure you want to logout?',
+          style: TextStyle(color: ColorManager.white),
+          textAlign: TextAlign.center,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              isArabic ? 'إلغاء' : 'Cancel',
+              style: TextStyle(
+                color: ColorManager.white.withValues(alpha: 0.7),
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              // Perform logout
+              context.read<AuthCubitCubit>().logout();
+              Navigator.pushNamedAndRemoveUntil(
+                context,
+                'LoginView',
+                (route) => false,
+              );
+            },
+            child: Text(
+              l10n.logout,
+              style: TextStyle(
+                color: ColorManager.availableColor,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  bool get isArabic => Localizations.localeOf(context).languageCode == 'ar';
 
   @override
   Widget build(BuildContext context) {
@@ -144,6 +204,20 @@ class _HomeViewState extends State<HomeView> {
             ),
           ],
         ),
+        actions: [
+          IconButton(
+            onPressed: () {
+              _showLogoutDialog(context);
+            },
+            icon: Icon(
+              Icons.logout_rounded,
+              color: ColorManager.availableColor,
+              size: 28.sp,
+            ),
+            tooltip: AppLocalizations.of(context)!.logout,
+          ),
+          SizedBox(width: 8.w),
+        ],
       ),
       body: Stack(
         fit: StackFit.expand,
