@@ -12,7 +12,7 @@ class LoginFooterWidget extends StatelessWidget {
       padding: EdgeInsets.only(top: 24.h, bottom: 8.h),
       child: Center(
         child: Text(
-          'Ascon SCAi © 2026',
+          'Rank Solutions © 2026',
           style: GoogleFonts.poppins(
             fontSize: 14.sp,
             color: ColorManager.white.withValues(alpha: 0.6),
