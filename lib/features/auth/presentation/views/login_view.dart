@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:propertybooking/l10n/app_localizations.dart';
 import 'package:propertybooking/core/utils/manager/assets_manager/image_manager.dart';
 import 'package:propertybooking/core/widgets/Images/custome_image.dart';
+import 'package:propertybooking/features/auth/presentation/widgets/social_buttons_widget.dart';
 import 'package:propertybooking/features/auth/presentation/widgets/language_toggle_button.dart';
 import 'package:propertybooking/features/auth/presentation/widgets/login_form_widget.dart';
 import 'package:propertybooking/core/utils/manager/color_manager/color_manager.dart';
@@ -126,9 +127,9 @@ class _LoginViewState extends State<LoginView>
                       ),
                     ),
 
-                    SizedBox(height: 24.h),
+                    SizedBox(height: 20.h),
 
-                    // Welcome Text
+                    // Logo Text
                     FadeTransition(
                       opacity: _fadeAnimation,
                       child: Column(
@@ -150,20 +151,11 @@ class _LoginViewState extends State<LoginView>
                               ],
                             ),
                           ),
-                          SizedBox(height: 8.h),
-                          Text(
-                            l10n.propertyBooking,
-                            style: TextStyle(
-                              fontSize: 16.sp,
-                              color: ColorManager.white.withValues(alpha: 0.8),
-                              letterSpacing: 1,
-                            ),
-                          ),
                         ],
                       ),
                     ),
 
-                    SizedBox(height: 48.h),
+                    SizedBox(height: 32.h),
 
                     // Login Form Card
                     SlideTransition(
@@ -202,6 +194,14 @@ class _LoginViewState extends State<LoginView>
                           ),
                         ),
                       ),
+                    ),
+
+                    SizedBox(height: 28.h),
+
+                    // Social Buttons
+                    FadeTransition(
+                      opacity: _fadeAnimation,
+                      child: const SocialButtonsWidget(),
                     ),
 
                     SizedBox(height: 40.h),

@@ -8,6 +8,7 @@ import 'package:propertybooking/l10n/app_localizations.dart';
 import 'package:propertybooking/features/auth/presentation/widgets/custom_login_text_field.dart';
 import 'package:propertybooking/features/auth/presentation/widgets/custom_login_button.dart';
 import 'package:propertybooking/features/auth/presentation/widgets/error_dialog.dart';
+import 'package:propertybooking/features/auth/presentation/widgets/login_footer_widget.dart';
 
 import '../../../../core/utils/navigation/router_path.dart';
 
@@ -117,6 +118,8 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
                 onPressed: isLoading ? null : _handleLogin,
                 isLoading: isLoading,
               ),
+
+              const LoginFooterWidget(),
             ],
           ),
         );
