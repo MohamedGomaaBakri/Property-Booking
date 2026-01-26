@@ -1,19 +1,16 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:propertybooking/core/utils/services/service_locator.dart';
-import 'package:propertybooking/features/auth/presentation/manager/auth_cubit/auth_cubit_cubit.dart';
 import 'package:propertybooking/features/home/data/datasource/home_datasource.dart';
 import 'package:propertybooking/features/home/data/models/zone_model.dart';
 import 'package:propertybooking/features/home/presentation/views/projects_view.dart';
 import 'package:propertybooking/features/home/presentation/widgets/zone_card.dart';
+import 'package:propertybooking/features/home/presentation/widgets/home_app_bar_widget.dart';
 import 'package:propertybooking/core/utils/manager/color_manager/color_manager.dart';
 import 'package:propertybooking/l10n/app_localizations.dart';
-
 import 'package:propertybooking/features/auth/data/models/user_model.dart';
-
 import '../../../../core/utils/manager/assets_manager/image_manager.dart';
 import '../../../../core/widgets/Images/custome_image.dart';
 
@@ -46,179 +43,11 @@ class _HomeViewState extends State<HomeView> {
     );
   }
 
-  void _showLogoutDialog(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: ColorManager.black.withValues(alpha: 0.9),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16.r),
-          side: BorderSide(color: ColorManager.availableColor, width: 1.w),
-        ),
-        title: Text(
-          l10n.logout,
-          style: TextStyle(
-            color: ColorManager.availableColor,
-            fontWeight: FontWeight.bold,
-          ),
-          textAlign: TextAlign.center,
-        ),
-        content: Text(
-          isArabic
-              ? 'هل أنت متأكد من تسجيل الخروج؟'
-              : 'Are you sure you want to logout?',
-          style: TextStyle(color: ColorManager.white),
-          textAlign: TextAlign.center,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              isArabic ? 'إلغاء' : 'Cancel',
-              style: TextStyle(
-                color: ColorManager.white.withValues(alpha: 0.7),
-              ),
-            ),
-          ),
-          TextButton(
-            onPressed: () {
-              // Perform logout
-              context.read<AuthCubitCubit>().logout();
-              Navigator.pushNamedAndRemoveUntil(
-                context,
-                'LoginView',
-                (route) => false,
-              );
-            },
-            child: Text(
-              l10n.logout,
-              style: TextStyle(
-                color: ColorManager.availableColor,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  bool get isArabic => Localizations.localeOf(context).languageCode == 'ar';
-
   @override
   Widget build(BuildContext context) {
-    log(getIt<AuthCubitCubit>().state.userModel.toString() ?? "");
     return Scaffold(
       backgroundColor: ColorManager.black.withValues(alpha: 0.4),
-      appBar: AppBar(
-        backgroundColor: ColorManager.darkGrayColor.withValues(alpha: 0.15),
-        automaticallyImplyLeading: false,
-        elevation: 0,
-        toolbarHeight: 80.h, // Increased height for profile info
-        title: Row(
-          children: [
-            // Profile Picture
-            Container(
-              width: 50.w,
-              height: 50.h,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: ColorManager.brandBlue.withValues(alpha: 0.2),
-                border: Border.all(
-                  color: ColorManager.brandBlue.withValues(alpha: 0.5),
-                  width: 2.w,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: ColorManager.brandBlue.withValues(alpha: 0.3),
-                    blurRadius: 10,
-                    spreadRadius: 2,
-                  ),
-                ],
-              ),
-              child: Icon(
-                Icons.person_rounded,
-                color: ColorManager.white,
-                size: 30.sp,
-              ),
-            ),
-
-            SizedBox(width: 16.w),
-
-            // Name and Role
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // Welcome Text
-                  Text(
-                    AppLocalizations.of(context)!.welcomeBack,
-                    style: TextStyle(
-                      fontSize: 12.sp,
-                      color: ColorManager.white.withValues(alpha: 0.8),
-                      letterSpacing: 0.3,
-                    ),
-                  ),
-
-                  SizedBox(height: 2.h),
-
-                  // User Name
-                  Text(
-                    widget.userModel.items?.firstOrNull?.empName ??
-                        AppLocalizations.of(context)!.guest,
-                    style: TextStyle(
-                      fontSize: 18.sp,
-                      fontWeight: FontWeight.bold,
-                      color: ColorManager.white,
-                      letterSpacing: 0.5,
-                      shadows: [
-                        Shadow(
-                          color: Colors.black.withValues(alpha: 0.3),
-                          offset: const Offset(0, 2),
-                          blurRadius: 8,
-                        ),
-                      ],
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-
-                  SizedBox(height: 2.h),
-
-                  // User Role
-                  Text(
-                    widget.userModel.items?.firstOrNull?.roleNameA ??
-                        AppLocalizations.of(context)!.propertyManager,
-                    style: TextStyle(
-                      fontSize: 11.sp,
-                      color: ColorManager.white.withValues(alpha: 0.7),
-                      letterSpacing: 0.2,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          IconButton(
-            onPressed: () {
-              _showLogoutDialog(context);
-            },
-            icon: Icon(
-              Icons.logout_rounded,
-              color: ColorManager.availableColor,
-              size: 28.sp,
-            ),
-            tooltip: AppLocalizations.of(context)!.logout,
-          ),
-          SizedBox(width: 8.w),
-        ],
-      ),
+      appBar: HomeAppBarWidget(userModel: widget.userModel),
       body: Stack(
         fit: StackFit.expand,
         children: [
