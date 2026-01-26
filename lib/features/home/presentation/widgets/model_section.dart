@@ -12,12 +12,14 @@ class ModelSection extends StatefulWidget {
   final String modelName;
   final List<UnitModel> units;
   final List<BuildingPhotoModel> photos;
+  final List<UnitModel> allFilteredUnits;
 
   const ModelSection({
     super.key,
     required this.modelName,
     required this.units,
     required this.photos,
+    required this.allFilteredUnits,
   });
 
   @override
@@ -212,7 +214,14 @@ class _ModelSectionState extends State<ModelSection> {
                     ),
                     itemCount: widget.units.length,
                     itemBuilder: (context, index) {
-                      return UnitCard(unit: widget.units[index]);
+                      final unit = widget.units[index];
+                      // Find the absolute index in the flattened list
+                      final absoluteIndex = widget.allFilteredUnits.indexOf(unit);
+                      return UnitCard(
+                        unit: unit,
+                        units: widget.allFilteredUnits,
+                        index: absoluteIndex,
+                      );
                     },
                   ),
                 ),

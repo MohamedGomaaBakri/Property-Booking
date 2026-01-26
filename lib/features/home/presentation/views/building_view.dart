@@ -24,6 +24,7 @@ class _BuildingViewState extends State<BuildingView> {
   late Future<List<UnitModel>> _unitsFuture;
   late Future<List<BuildingPhotoModel>> _photosFuture;
   late HomeDatasource _homeDatasource;
+  int? _selectedStatus; // null = all, 0 = available, 1 = reserved, 3 = sold
 
   @override
   void initState() {
@@ -165,7 +166,7 @@ class _BuildingViewState extends State<BuildingView> {
                   );
                 }
 
-                if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                if (!snapshot.hasData || (snapshot.data![0] as List).isEmpty) {
                   return Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -197,16 +198,24 @@ class _BuildingViewState extends State<BuildingView> {
                   );
                 }
 
-                final units = snapshot.data![0] as List<UnitModel>;
+                final List<UnitModel> allUnits = snapshot.data![0] as List<UnitModel>;
                 final photos = snapshot.data![1] as List<BuildingPhotoModel>;
+
+                // Apply filtering
+                final filteredUnits = _selectedStatus == null
+                    ? allUnits
+                    : allUnits
+                        .where((u) => u.unitStatus?.toInt() == _selectedStatus)
+                        .toList();
+
                 log(
-                  '✅ Displaying ${units.length} units and ${photos.length} photos',
+                  '✅ Displaying ${filteredUnits.length} units and ${photos.length} photos',
                   name: 'BuildingView',
                 );
 
                 // Group units by model code
                 Map<int, List<UnitModel>> unitsByModel = {};
-                for (var unit in units) {
+                for (var unit in filteredUnits) {
                   final modelCode = unit.modelCode?.toInt() ?? 0;
                   if (!unitsByModel.containsKey(modelCode)) {
                     unitsByModel[modelCode] = [];
@@ -224,11 +233,13 @@ class _BuildingViewState extends State<BuildingView> {
                   photosByModel[modelCode]!.add(photo);
                 }
 
-                // Get unique model codes from both units and photos
+                // Get unique model codes from both photos AND filtered units
+                // We show models that have units or photos
                 final allModelCodes = {
                   ...unitsByModel.keys,
                   ...photosByModel.keys,
-                }.toList()..sort();
+                }.toList()
+                  ..sort();
 
                 return RefreshIndicator(
                   color: ColorManager.availableColor,
@@ -266,12 +277,26 @@ class _BuildingViewState extends State<BuildingView> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
-                              _buildLegendItem('متاحة', ColorManager.availableColor),
+                              _buildLegendItem(
+                                'الكل',
+                                ColorManager.white,
+                                null,
+                              ),
+                              _buildLegendItem(
+                                'متاحة',
+                                ColorManager.availableColor,
+                                0,
+                              ),
                               _buildLegendItem(
                                 'محجوزة',
-                                ColorManager.white.withValues(alpha: 0.15),
+                                ColorManager.white.withValues(alpha: 0.4),
+                                1,
                               ),
-                              _buildLegendItem('مباعة', ColorManager.soldColor),
+                              _buildLegendItem(
+                                'مباعة',
+                                ColorManager.soldColor,
+                                3,
+                              ),
                             ],
                           ),
                         );
@@ -281,6 +306,12 @@ class _BuildingViewState extends State<BuildingView> {
                       final modelCode = allModelCodes[index - 1];
                       final modelUnits = unitsByModel[modelCode] ?? [];
                       final modelPhotos = photosByModel[modelCode] ?? [];
+                      
+                      // Skip if filtering and no units for this model
+                      if (_selectedStatus != null && modelUnits.isEmpty) {
+                        return const SizedBox.shrink();
+                      }
+
                       final modelName = modelPhotos.isNotEmpty
                           ? modelPhotos.first.modelName ?? 'موديل $modelCode'
                           : 'موديل $modelCode';
@@ -289,6 +320,7 @@ class _BuildingViewState extends State<BuildingView> {
                         modelName: modelName,
                         units: modelUnits,
                         photos: modelPhotos,
+                        allFilteredUnits: filteredUnits,
                       );
                     },
                   ),
@@ -301,31 +333,55 @@ class _BuildingViewState extends State<BuildingView> {
     );
   }
 
-  Widget _buildLegendItem(String label, Color color) {
-    return Row(
-      children: [
-        Container(
-          width: 20.w,
-          height: 20.h,
-          decoration: BoxDecoration(
-            color: color,
-            borderRadius: BorderRadius.circular(4.r),
-            border: Border.all(
-              color: ColorManager.white.withValues(alpha: 0.3),
-              width: 1.w,
+  Widget _buildLegendItem(String label, Color color, int? status) {
+    bool isSelected = _selectedStatus == status;
+    return InkWell(
+      onTap: () {
+        setState(() {
+          _selectedStatus = status;
+        });
+      },
+      borderRadius: BorderRadius.circular(8.r),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? color.withValues(alpha: 0.2)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(8.r),
+          border: Border.all(
+            color: isSelected ? color : Colors.transparent,
+            width: 1.w,
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 16.w,
+              height: 16.h,
+              decoration: BoxDecoration(
+                color: color,
+                borderRadius: BorderRadius.circular(4.r),
+                border: Border.all(
+                  color: ColorManager.white.withValues(alpha: 0.3),
+                  width: 1.w,
+                ),
+              ),
             ),
-          ),
+            SizedBox(width: 6.w),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 13.sp,
+                color: isSelected ? ColorManager.white : ColorManager.white.withValues(alpha: 0.7),
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+              ),
+            ),
+          ],
         ),
-        SizedBox(width: 8.w),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 14.sp,
-            color: ColorManager.white,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-      ],
+      ),
     );
   }
 }

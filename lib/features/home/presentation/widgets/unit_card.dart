@@ -6,8 +6,15 @@ import '../views/unit_details_view.dart';
 
 class UnitCard extends StatelessWidget {
   final UnitModel unit;
+  final List<UnitModel> units;
+  final int index;
 
-  const UnitCard({super.key, required this.unit});
+  const UnitCard({
+    super.key,
+    required this.unit,
+    required this.units,
+    required this.index,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +25,10 @@ class UnitCard extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => UnitDetailsView(unit: unit),
+            builder: (context) => UnitDetailsView(
+              units: units,
+              initialIndex: index,
+            ),
           ),
         );
       },
