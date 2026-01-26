@@ -12,4 +12,5 @@ class ApiConstants {
   static const String getModelPhotoByBuilding = 'Get_Photo_Building';
   static const String getAllPhotosForUnit = 'Get_AllPhoto_UNITES';
   static const String reserveUnit = 'Reserve_Unit'; // Speculative
+  static const String getCustomers = 'Ge_Customer_code_name';
 }

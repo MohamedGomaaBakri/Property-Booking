@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:propertybooking/features/home/data/models/customer_model.dart';
 import '../../../../core/utils/manager/color_manager/color_manager.dart';
 import '../../../../core/utils/services/service_locator.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -43,7 +44,7 @@ class _UnitDetailsViewState extends State<UnitDetailsView> {
   late HomeDatasource _homeDatasource;
 
   String? _selectedUser;
-  List<String> _users = [];
+  List<CustomerModel> _users = [];
   bool _isLoadingUsers = true;
 
   DateTime _reservationDate = DateTime.now();
@@ -70,8 +71,9 @@ class _UnitDetailsViewState extends State<UnitDetailsView> {
 
   void _initUnitControllers() {
     final unit = widget.units[_currentIndex];
-    _meterPriceController.text =
-        _numberFormatter.format(unit.meterPriceInst ?? 0);
+    _meterPriceController.text = _numberFormatter.format(
+      unit.meterPriceInst ?? 0,
+    );
     _unitAreaController.text = unit.unitArea?.toString() ?? "0";
     _calculateTotal();
   }
@@ -95,7 +97,7 @@ class _UnitDetailsViewState extends State<UnitDetailsView> {
 
   Future<void> _fetchUsers() async {
     setState(() => _isLoadingUsers = true);
-    _users = await _homeDatasource.getUsers();
+    _users = await _homeDatasource.getCustomers();
     setState(() => _isLoadingUsers = false);
   }
 
@@ -195,6 +197,7 @@ class _UnitDetailsViewState extends State<UnitDetailsView> {
         onPageChanged: (index) {
           setState(() {
             _currentIndex = index;
+            _selectedUser = null;
             _customerNameController.clear();
             _descriptionController.clear();
             _paymentValueController.clear();
@@ -204,8 +207,9 @@ class _UnitDetailsViewState extends State<UnitDetailsView> {
         itemBuilder: (context, index) {
           final unit = widget.units[index];
           final status = unit.unitStatus?.toInt() ?? 4;
-          final fullDescription =
-              isArabic ? (unit.unitNameA ?? "-") : (unit.unitNameE ?? "-");
+          final fullDescription = isArabic
+              ? (unit.unitNameA ?? "-")
+              : (unit.unitNameE ?? "-");
 
           return SingleChildScrollView(
             child: Column(
@@ -466,8 +470,9 @@ class _UnitDetailsViewState extends State<UnitDetailsView> {
                           height: 50.h,
                           child: ElevatedButton(
                             onPressed: () {
-                              final authState =
-                                  context.read<AuthCubitCubit>().state;
+                              final authState = context
+                                  .read<AuthCubitCubit>()
+                                  .state;
                               final salesCode =
                                   authState
                                       .userModel
@@ -566,10 +571,9 @@ class _UnitDetailsViewState extends State<UnitDetailsView> {
         color: color ?? ColorManager.white,
         fontWeight: enabled ? FontWeight.normal : FontWeight.bold,
       ),
-      keyboardType:
-          isNumber
-              ? const TextInputType.numberWithOptions(decimal: true)
-              : TextInputType.text,
+      keyboardType: isNumber
+          ? const TextInputType.numberWithOptions(decimal: true)
+          : TextInputType.text,
       decoration: InputDecoration(
         hintText: hint,
         suffixText: suffix,
@@ -628,59 +632,85 @@ class _UnitDetailsViewState extends State<UnitDetailsView> {
   }
 
   Widget _buildDropdownField(String hint) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 12.w),
-      decoration: BoxDecoration(
-        color: ColorManager.white.withValues(alpha: 0.05),
-        borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(
-          color: ColorManager.availableColor.withValues(alpha: 0.3),
+    if (_isLoadingUsers) {
+      return Container(
+        padding: EdgeInsets.symmetric(vertical: 14.h),
+        decoration: BoxDecoration(
+          color: ColorManager.white.withValues(alpha: 0.05),
+          borderRadius: BorderRadius.circular(12.r),
+          border: Border.all(
+            color: ColorManager.availableColor.withValues(alpha: 0.3),
+          ),
         ),
-      ),
-      child:
-          _isLoadingUsers
-              ? Center(
-                child: Padding(
-                  padding: EdgeInsets.all(8.h),
-                  child: SizedBox(
-                    height: 20.h,
-                    width: 20.h,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: ColorManager.availableColor,
-                    ),
-                  ),
-                ),
-              )
-              : DropdownButtonHideUnderline(
-                child: DropdownButton<String>(
-                  value: _selectedUser,
-                  dropdownColor: ColorManager.darkGrayColor,
-                  icon: Icon(
-                    Icons.arrow_drop_down,
-                    color: ColorManager.availableColor,
-                  ),
-                  isExpanded: true,
-                  style: TextStyle(color: ColorManager.white),
-                  hint: Text(
-                    hint,
-                    style: TextStyle(
-                      color: ColorManager.white.withValues(alpha: 0.3),
-                    ),
-                  ),
-                  items: _users.map((String user) {
-                    return DropdownMenuItem<String>(
-                      value: user,
-                      child: Text(user),
-                    );
-                  }).toList(),
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      _selectedUser = newValue;
-                    });
-                  },
-                ),
+        child: Center(
+          child: SizedBox(
+            height: 20.h,
+            width: 20.h,
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+              color: ColorManager.availableColor,
+            ),
+          ),
+        ),
+      );
+    }
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return DropdownMenu<String>(
+          width: constraints.maxWidth,
+          initialSelection: _selectedUser,
+          hintText: hint,
+          enableSearch: true,
+          enableFilter: true,
+          requestFocusOnTap: true,
+          textStyle: TextStyle(color: ColorManager.white, fontSize: 14.sp),
+          menuStyle: MenuStyle(
+            backgroundColor: WidgetStateProperty.all(ColorManager.darkGrayColor),
+            maximumSize: WidgetStateProperty.all(Size.fromHeight(300.h)),
+          ),
+          inputDecorationTheme: InputDecorationTheme(
+            filled: true,
+            fillColor: ColorManager.white.withValues(alpha: 0.05),
+            contentPadding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12.r),
+              borderSide: BorderSide(
+                color: ColorManager.availableColor.withValues(alpha: 0.3),
               ),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12.r),
+              borderSide: BorderSide(
+                color: ColorManager.availableColor.withValues(alpha: 0.3),
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12.r),
+              borderSide: BorderSide(color: ColorManager.availableColor),
+            ),
+            hintStyle: TextStyle(
+              color: ColorManager.white.withValues(alpha: 0.3),
+              fontSize: 14.sp,
+            ),
+          ),
+          dropdownMenuEntries:
+              _users.map((CustomerModel user) {
+                return DropdownMenuEntry<String>(
+                  value: user.code?.toString() ?? "",
+                  label: user.nameA ?? "",
+                  style: MenuItemButton.styleFrom(
+                    foregroundColor: ColorManager.white,
+                  ),
+                );
+              }).toList(),
+          onSelected: (String? newValue) {
+            setState(() {
+              _selectedUser = newValue;
+            });
+          },
+        );
+      },
     );
   }
 

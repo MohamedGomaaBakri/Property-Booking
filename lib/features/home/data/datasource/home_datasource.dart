@@ -4,6 +4,7 @@ import 'package:propertybooking/core/utils/networking/api_constants.dart';
 import 'package:propertybooking/core/utils/networking/api_service.dart';
 import 'package:propertybooking/features/home/data/models/building_model.dart';
 import 'package:propertybooking/features/home/data/models/building_photo_model.dart';
+import 'package:propertybooking/features/home/data/models/customer_model.dart';
 import 'package:propertybooking/features/home/data/models/land_model.dart';
 import 'package:propertybooking/features/home/data/models/project_model.dart';
 import 'package:propertybooking/features/home/data/models/unit_model.dart';
@@ -290,18 +291,29 @@ class HomeDatasource {
     }
   }
 
-  Future<List<String>> getUsers() async {
+  Future<List<CustomerModel>> getCustomers() async {
     try {
-      // Assuming this endpoint returns a list of users/customers
-      final response = await apiService.get(endPoint: ApiConstants.getUser);
+      final response = await apiService.get(
+        endPoint: ApiConstants.getCustomers,
+      );
       if (response['items'] is! List) return [];
       final List<dynamic> items = response['items'];
       return items
-          .map((item) => item['emp_name']?.toString() ?? '')
-          .where((name) => name.isNotEmpty)
+          .map((item) {
+            try {
+              return CustomerModel.fromJson(item);
+            } catch (e) {
+              log(
+                '❌ Error parsing Customer: $e\nItem: $item',
+                name: 'HomeDatasource',
+              );
+              return null;
+            }
+          })
+          .whereType<CustomerModel>()
           .toList();
     } catch (e) {
-      log('❌ Error in getUsers: $e', name: 'HomeDatasource');
+      log('❌ Error in getCustomers: $e', name: 'HomeDatasource');
       return [];
     }
   }
