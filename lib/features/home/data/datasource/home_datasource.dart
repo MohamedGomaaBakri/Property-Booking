@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:propertybooking/core/utils/networking/api_constants.dart';
@@ -318,7 +319,7 @@ class HomeDatasource {
     }
   }
 
-  Future<void> reserveUnit({
+  Future<dynamic> reserveUnit({
     required int salesCode,
     required num buildingCode,
     required String unitCode,
@@ -333,23 +334,67 @@ class HomeDatasource {
     required num paymentValue,
     required String dueDate,
   }) async {
+    final Map<String, dynamic> data = {
+      "trns_type_code": 103,
+      "branch_code": 10,
+      "customer_code": selectedUser,
+      "Customer_Desc": customerName,
+      "cntrct_type": 1,
+      "pay_type": 1,
+      "rsrv_date": reservationDate,
+      "cntrct_date": contractDate,
+      "building_code": buildingCode,
+      "unit_code": unitCode,
+      "meter_price": meterPrice,
+      "unit_area": unitArea,
+      "inst_months": 12,
+      "inst_no": 12,
+      "val_code": 3,
+      "inst_val": paymentValue,
+      "inst_date": dueDate,
+      "desc_a": description.isEmpty ? "دفعة حجز" : description,
+      "notes": "حجز وحدة استثمار عقاري",
+      "user_code": salesCode,
+    };
+
     log('--- Reservation Request ---', name: 'HomeDatasource');
-    log('Sales Code: $salesCode', name: 'HomeDatasource');
-    log('Building Code: $buildingCode', name: 'HomeDatasource');
-    log('Unit Code: $unitCode', name: 'HomeDatasource');
-    log('Customer Name (Manual): $customerName', name: 'HomeDatasource');
-    log('Selected User (Dropdown): $selectedUser', name: 'HomeDatasource');
-    log('Reservation Date: $reservationDate', name: 'HomeDatasource');
-    log('Contract Date: $contractDate', name: 'HomeDatasource');
-    log('Description: $description', name: 'HomeDatasource');
-    log('Meter Price: $meterPrice', name: 'HomeDatasource');
-    log('Unit Area: $unitArea', name: 'HomeDatasource');
-    log('Total Price (Calc): $totalPrice', name: 'HomeDatasource');
-    log('Payment Value: $paymentValue', name: 'HomeDatasource');
-    log('Due Date: $dueDate', name: 'HomeDatasource');
+    log('Data: $data', name: 'HomeDatasource');
     log('---------------------------', name: 'HomeDatasource');
 
-    // TODO: Implement actual POST request here when endpoint is ready
-    // await apiService.post(endPoint: ApiConstants.reserveUnit, data: {...});
+    try {
+      final response = await apiService.post(
+        endPoint: ApiConstants.reserveUnit,
+        data: data,
+        headers: {},
+      );
+      log('✅ Reservation Response: $response', name: 'HomeDatasource');
+      if (response is String) {
+        // Clean the response string
+        String cleanedResponse = response;
+
+        // Remove "Content-type: application/json; charset=utf-8" prefix if present
+        if (response.contains(
+          'Content-type: application/json; charset=utf-8',
+        )) {
+          final jsonStartIndex = response.indexOf('{');
+          if (jsonStartIndex != -1) {
+            cleanedResponse = response.substring(jsonStartIndex);
+          }
+        }
+
+        // Try to parse as JSON
+        try {
+          final jsonData = jsonDecode(cleanedResponse);
+          return jsonData;
+        } catch (e) {
+          log('❌ Failed to parse cleaned response: $e', name: 'HomeDatasource');
+          return {'status': 'error', 'message': 'Failed to parse response'};
+        }
+      }
+      return response;
+    } catch (e) {
+      log('❌ Error in reserveUnit: $e', name: 'HomeDatasource');
+      rethrow;
+    }
   }
 }

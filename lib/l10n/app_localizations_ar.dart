@@ -217,4 +217,31 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get close => 'إغلاق';
+
+  @override
+  String get selectUser => 'يرجى اختيار العميل';
+
+  @override
+  String get reservationSuccess => 'تم إنشاء الحجز بنجاح';
+
+  @override
+  String get reservationError => 'فشل إنشاء الحجز';
+
+  @override
+  String get unitAlreadyReserved => 'هذه الوحدة محجوزة بالفعل';
+
+  @override
+  String get serverError => 'خطأ في الخادم. يرجى المحاولة مرة أخرى لاحقاً.';
+
+  @override
+  String get ok => 'حسناً';
+
+  @override
+  String get success => 'نجاح';
+
+  @override
+  String get error => 'خطأ';
+
+  @override
+  String get fillAllFields => 'املأ جميع البيانات';
 }

@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
@@ -14,18 +16,42 @@ class ApiService {
     return response.data;
   }
 
-  Future<Response> post({
+  Future<dynamic> post({
     required String endPoint,
     Object? data,
     BuildContext? context,
-    required Map<String, String> headers,
+    Map<String, String>? headers,
   }) async {
-    var response = await _dio.post(
-      endPoint,
-      data: data,
-      options: Options(headers: {'Content-Type': 'application/json'}),
-    );
-    return response;
+    try {
+      var response = await _dio.post(
+        endPoint,
+        data: data,
+        options: Options(
+          responseType: ResponseType.plain, // Fetch as string to avoid FormatException
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            ...?headers,
+          },
+        ),
+      );
+
+      final rawData = response.data;
+      if (rawData is String && rawData.isNotEmpty) {
+        try {
+          return jsonDecode(rawData);
+        } catch (e) {
+          log('⚠️ Response is not JSON: $rawData', name: 'ApiService');
+          return rawData;
+        }
+      }
+      return rawData;
+    } on DioException catch (e) {
+      if (e.response?.data != null) {
+        log('❌ API Error Response: ${e.response?.data}', name: 'ApiService');
+      }
+      rethrow;
+    }
   }
 
   Future<Map<String, dynamic>> put({

@@ -69,5 +69,14 @@
     "noUnitsFoundInBuilding": "لم يتم العثور على وحدات في هذا المبنى",
     "errorLoadingUnits": "خطأ في تحميل الوحدات",
     "building": "المبنى",
-    "close": "إغلاق"
+    "close": "إغلاق",
+    "selectUser": "يرجى اختيار العميل",
+    "reservationSuccess": "تم إنشاء الحجز بنجاح",
+    "reservationError": "فشل إنشاء الحجز",
+    "unitAlreadyReserved": "هذه الوحدة محجوزة بالفعل",
+    "serverError": "خطأ في الخادم. يرجى المحاولة مرة أخرى لاحقاً.",
+    "ok": "حسناً",
+    "success": "نجاح",
+    "error": "خطأ",
+    "fillAllFields": "املأ جميع البيانات"
 }

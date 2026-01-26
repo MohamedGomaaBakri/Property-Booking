@@ -217,4 +217,31 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get close => 'Close';
+
+  @override
+  String get selectUser => 'Please select a customer';
+
+  @override
+  String get reservationSuccess => 'Reservation created successfully';
+
+  @override
+  String get reservationError => 'Reservation failed';
+
+  @override
+  String get unitAlreadyReserved => 'Unit is already reserved';
+
+  @override
+  String get serverError => 'Server Error. Please try again later.';
+
+  @override
+  String get ok => 'OK';
+
+  @override
+  String get success => 'Success';
+
+  @override
+  String get error => 'Error';
+
+  @override
+  String get fillAllFields => 'Fill all Fields';
 }

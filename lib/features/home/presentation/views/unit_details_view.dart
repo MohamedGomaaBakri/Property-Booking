@@ -1,4 +1,5 @@
-import 'dart:developer';
+import 'package:dio/dio.dart';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -7,6 +8,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:propertybooking/features/home/data/models/customer_model.dart';
 import '../../../../core/utils/manager/color_manager/color_manager.dart';
+import '../../../../core/utils/navigation/router_path.dart';
 import '../../../../core/utils/services/service_locator.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../auth/presentation/manager/auth_cubit/auth_cubit_cubit.dart';
@@ -19,11 +21,13 @@ import '../widgets/unit_image_carousel.dart';
 class UnitDetailsView extends StatefulWidget {
   final List<UnitModel> units;
   final int initialIndex;
+  final VoidCallback? onRefresh;
 
   const UnitDetailsView({
     super.key,
     required this.units,
     required this.initialIndex,
+    this.onRefresh,
   });
 
   @override
@@ -46,12 +50,13 @@ class _UnitDetailsViewState extends State<UnitDetailsView> {
   String? _selectedUser;
   List<CustomerModel> _users = [];
   bool _isLoadingUsers = true;
+  bool _isReserving = false;
 
   DateTime _reservationDate = DateTime.now();
   DateTime _contractDate = DateTime.now();
   DateTime _dueDate = DateTime.now();
 
-  final DateFormat _dateFormatter = DateFormat('dd/MM/yyyy');
+  final DateFormat _dateFormatter = DateFormat('yyyy-MM-dd');
   final NumberFormat _numberFormatter = NumberFormat('#,##0.00', 'en_US');
 
   @override
@@ -64,9 +69,18 @@ class _UnitDetailsViewState extends State<UnitDetailsView> {
     _initUnitControllers();
     _fetchUsers();
 
-    // Add listeners for calculation
-    _meterPriceController.addListener(_calculateTotal);
-    _unitAreaController.addListener(_calculateTotal);
+    // Add listeners for calculation and validation
+    _meterPriceController.addListener(() {
+      _calculateTotal();
+      _validateFields();
+    });
+    _unitAreaController.addListener(() {
+      _calculateTotal();
+      _validateFields();
+    });
+    _customerNameController.addListener(_validateFields);
+    _descriptionController.addListener(_validateFields);
+    _paymentValueController.addListener(_validateFields);
   }
 
   void _initUnitControllers() {
@@ -169,10 +183,232 @@ class _UnitDetailsViewState extends State<UnitDetailsView> {
     }
   }
 
+  // Add method to check if all required fields are filled
+  bool _areRequiredFieldsFilled() {
+    return _selectedUser != null &&
+        _selectedUser!.isNotEmpty &&
+        _customerNameController.text.trim().isNotEmpty &&
+        _descriptionController.text.trim().isNotEmpty &&
+        _meterPriceController.text.trim().isNotEmpty &&
+        _unitAreaController.text.trim().isNotEmpty &&
+        _paymentValueController.text.trim().isNotEmpty &&
+        _totalPriceController.text.trim().isNotEmpty;
+  }
+
+  // Add validation trigger
+  void _validateFields() {
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  Future<void> _handleReservation(UnitModel unit) async {
+    // First validate all fields
+    if (!_areRequiredFieldsFilled()) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.fillAllFields),
+          backgroundColor: ColorManager.soldColor,
+        ),
+      );
+      return;
+    }
+
+    if (_selectedUser == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.selectUser),
+          backgroundColor: ColorManager.soldColor,
+        ),
+      );
+      return;
+    }
+
+    setState(() => _isReserving = true);
+
+    try {
+      final authState = context.read<AuthCubitCubit>().state;
+      final salesCode = authState.userModel?.items?.firstOrNull?.usersCode ?? 0;
+
+      final response = await _homeDatasource.reserveUnit(
+        salesCode: salesCode,
+        buildingCode: unit.buildingCode ?? 0,
+        unitCode: unit.unitCode ?? "",
+        customerName: _customerNameController.text,
+        selectedUser: _selectedUser!,
+        reservationDate: _dateFormatter.format(_reservationDate),
+        contractDate: _dateFormatter.format(_contractDate),
+        description: _descriptionController.text,
+        meterPrice: _parseFormatted(_meterPriceController.text),
+        unitArea: _parseFormatted(_unitAreaController.text),
+        totalPrice: _parseFormatted(_totalPriceController.text),
+        paymentValue: _parseFormatted(_paymentValueController.text),
+        dueDate: _dateFormatter.format(_dueDate),
+      );
+
+      if (mounted) {
+        final localizations = AppLocalizations.of(context)!;
+        String message = localizations.reservationSuccess;
+        bool isSuccess = true;
+
+        // Check if response is DioError
+        if (response is DioException) {
+          message = _getErrorMessageFromDio(response, localizations);
+          isSuccess = false;
+        } else if (response is Map<String, dynamic>) {
+          if (response['status'] == 'success') {
+            message = localizations.reservationSuccess;
+          } else if (response['message'] == 'Unit is already reserved') {
+            message = localizations.unitAlreadyReserved;
+            isSuccess = false;
+          } else {
+            // Check for server error in message too
+            final errorMsg = response['message'] ?? '';
+            if (errorMsg.contains('500') ||
+                errorMsg.toLowerCase().contains('server error') ||
+                errorMsg.toLowerCase().contains('internal error')) {
+              message = localizations.serverError;
+            } else {
+              message = errorMsg.isNotEmpty
+                  ? errorMsg
+                  : localizations.reservationError;
+            }
+            isSuccess = false;
+          }
+        } else if (response is Response) {
+          // Handle direct Response object
+          if (response.statusCode != null && response.statusCode! >= 500) {
+            message = localizations.serverError;
+            isSuccess = false;
+          } else if (response.statusCode == 200) {
+            message = localizations.reservationSuccess;
+          } else {
+            message = localizations.reservationError;
+            isSuccess = false;
+          }
+        }
+
+        await _showResultDialog(message, isSuccess);
+
+        if (isSuccess || message == localizations.unitAlreadyReserved) {
+          if (mounted) {
+            // Navigate back to BuildingView with refresh
+            Navigator.of(context).pop();
+
+            // Trigger refresh callback if provided
+            if (widget.onRefresh != null) {
+              widget.onRefresh!();
+            }
+          }
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        _showResultDialog(
+          AppLocalizations.of(context)!.reservationError,
+          false,
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isReserving = false);
+      }
+    }
+  }
+
+  String _getErrorMessageFromDio(DioException error, AppLocalizations l10n) {
+    if (error.response != null) {
+      final statusCode = error.response!.statusCode;
+
+      if (statusCode != null && statusCode >= 500) {
+        return l10n.serverError;
+      }
+
+      // Try to get message from response data
+      if (error.response!.data is Map<String, dynamic>) {
+        return error.response!.data['message'] ?? l10n.reservationError;
+      } else if (error.response!.data is String) {
+        return error.response!.data;
+      }
+    }
+
+    return l10n.reservationError;
+  }
+
+  Future<void> _showResultDialog(String message, bool isSuccess) async {
+    final localizations = AppLocalizations.of(context)!;
+    return showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        backgroundColor: ColorManager.black.withValues(alpha: 0.9),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16.r),
+          side: BorderSide(
+            color: isSuccess
+                ? ColorManager.availableColor
+                : ColorManager.soldColor,
+            width: 1.w,
+          ),
+        ),
+        title: Text(
+          isSuccess ? localizations.success : localizations.error,
+          style: TextStyle(
+            color: isSuccess
+                ? ColorManager.availableColor
+                : ColorManager.soldColor,
+            fontWeight: FontWeight.bold,
+          ),
+          textAlign: TextAlign.center,
+        ),
+        content: Text(
+          message,
+          style: TextStyle(color: ColorManager.white),
+          textAlign: TextAlign.center,
+        ),
+        actions: [
+          Center(
+            child: ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context); // Close dialog
+
+                if (isSuccess || message == localizations.unitAlreadyReserved) {
+                  // Navigate back properly
+                  Navigator.of(context).pop();
+
+                  // Trigger refresh
+                  if (widget.onRefresh != null) {
+                    widget.onRefresh!();
+                  }
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: isSuccess
+                    ? ColorManager.availableColor
+                    : ColorManager.soldColor,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12.r),
+                ),
+              ),
+              child: Text(
+                localizations.ok,
+                style: TextStyle(
+                  color: ColorManager.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     final isArabic = Localizations.localeOf(context).languageCode == 'ar';
+    final areFieldsFilled = _areRequiredFieldsFilled();
 
     return Scaffold(
       backgroundColor: ColorManager.black,
@@ -469,60 +705,41 @@ class _UnitDetailsViewState extends State<UnitDetailsView> {
                           width: double.infinity,
                           height: 50.h,
                           child: ElevatedButton(
-                            onPressed: () {
-                              final authState = context
-                                  .read<AuthCubitCubit>()
-                                  .state;
-                              final salesCode =
-                                  authState
-                                      .userModel
-                                      ?.items
-                                      ?.firstOrNull
-                                      ?.usersCode ??
-                                  0;
-
-                              _homeDatasource.reserveUnit(
-                                salesCode: salesCode,
-                                buildingCode: unit.buildingCode ?? 0,
-                                unitCode: unit.unitCode ?? "",
-                                customerName: _customerNameController.text,
-                                selectedUser: _selectedUser ?? "",
-                                reservationDate: _dateFormatter.format(
-                                  _reservationDate,
-                                ),
-                                contractDate: _dateFormatter.format(
-                                  _contractDate,
-                                ),
-                                description: _descriptionController.text,
-                                meterPrice: _parseFormatted(
-                                  _meterPriceController.text,
-                                ),
-                                unitArea: _parseFormatted(
-                                  _unitAreaController.text,
-                                ),
-                                totalPrice: _parseFormatted(
-                                  _totalPriceController.text,
-                                ),
-                                paymentValue: _parseFormatted(
-                                  _paymentValueController.text,
-                                ),
-                                dueDate: _dateFormatter.format(_dueDate),
-                              );
-                            },
+                            onPressed: areFieldsFilled && !_isReserving
+                                ? () => _handleReservation(unit)
+                                : null,
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: ColorManager.availableColor,
+                              backgroundColor: areFieldsFilled
+                                  ? ColorManager.availableColor
+                                  : ColorManager.availableColor.withOpacity(
+                                      0.5,
+                                    ),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12.r),
                               ),
+                              disabledBackgroundColor: ColorManager
+                                  .availableColor
+                                  .withOpacity(0.3),
                             ),
-                            child: Text(
-                              localizations.reserve,
-                              style: TextStyle(
-                                color: ColorManager.white,
-                                fontSize: 18.sp,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
+                            child: _isReserving
+                                ? SizedBox(
+                                    height: 20.h,
+                                    width: 20.h,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: ColorManager.white,
+                                    ),
+                                  )
+                                : Text(
+                                    localizations.reserve,
+                                    style: TextStyle(
+                                      color: areFieldsFilled
+                                          ? ColorManager.white
+                                          : ColorManager.white.withOpacity(0.7),
+                                      fontSize: 18.sp,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
                           ),
                         ),
                         SizedBox(height: 32.h),
@@ -666,13 +883,18 @@ class _UnitDetailsViewState extends State<UnitDetailsView> {
           requestFocusOnTap: true,
           textStyle: TextStyle(color: ColorManager.white, fontSize: 14.sp),
           menuStyle: MenuStyle(
-            backgroundColor: WidgetStateProperty.all(ColorManager.darkGrayColor),
+            backgroundColor: WidgetStateProperty.all(
+              ColorManager.darkGrayColor,
+            ),
             maximumSize: WidgetStateProperty.all(Size.fromHeight(300.h)),
           ),
           inputDecorationTheme: InputDecorationTheme(
             filled: true,
             fillColor: ColorManager.white.withValues(alpha: 0.05),
-            contentPadding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+            contentPadding: EdgeInsets.symmetric(
+              horizontal: 12.w,
+              vertical: 8.h,
+            ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12.r),
               borderSide: BorderSide(
@@ -694,16 +916,15 @@ class _UnitDetailsViewState extends State<UnitDetailsView> {
               fontSize: 14.sp,
             ),
           ),
-          dropdownMenuEntries:
-              _users.map((CustomerModel user) {
-                return DropdownMenuEntry<String>(
-                  value: user.code?.toString() ?? "",
-                  label: user.nameA ?? "",
-                  style: MenuItemButton.styleFrom(
-                    foregroundColor: ColorManager.white,
-                  ),
-                );
-              }).toList(),
+          dropdownMenuEntries: _users.map((CustomerModel user) {
+            return DropdownMenuEntry<String>(
+              value: user.code?.toString() ?? "",
+              label: user.nameA ?? "",
+              style: MenuItemButton.styleFrom(
+                foregroundColor: ColorManager.white,
+              ),
+            );
+          }).toList(),
           onSelected: (String? newValue) {
             setState(() {
               _selectedUser = newValue;

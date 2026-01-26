@@ -517,6 +517,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Close'**
   String get close;
+
+  /// No description provided for @selectUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a customer'**
+  String get selectUser;
+
+  /// No description provided for @reservationSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Reservation created successfully'**
+  String get reservationSuccess;
+
+  /// No description provided for @reservationError.
+  ///
+  /// In en, this message translates to:
+  /// **'Reservation failed'**
+  String get reservationError;
+
+  /// No description provided for @unitAlreadyReserved.
+  ///
+  /// In en, this message translates to:
+  /// **'Unit is already reserved'**
+  String get unitAlreadyReserved;
+
+  /// No description provided for @serverError.
+  ///
+  /// In en, this message translates to:
+  /// **'Server Error. Please try again later.'**
+  String get serverError;
+
+  /// No description provided for @ok.
+  ///
+  /// In en, this message translates to:
+  /// **'OK'**
+  String get ok;
+
+  /// No description provided for @success.
+  ///
+  /// In en, this message translates to:
+  /// **'Success'**
+  String get success;
+
+  /// No description provided for @error.
+  ///
+  /// In en, this message translates to:
+  /// **'Error'**
+  String get error;
+
+  /// No description provided for @fillAllFields.
+  ///
+  /// In en, this message translates to:
+  /// **'Fill all Fields'**
+  String get fillAllFields;
 }
 
 class _AppLocalizationsDelegate

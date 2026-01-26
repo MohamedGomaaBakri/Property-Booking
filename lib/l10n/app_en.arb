@@ -69,5 +69,15 @@
     "noUnitsFoundInBuilding": "No units found in this building",
     "errorLoadingUnits": "Error loading units",
     "building": "Building",
-    "close": "Close"
+    "close": "Close",
+    "selectUser": "Please select a customer",
+    "reservationSuccess": "Reservation created successfully",
+    "reservationError": "Reservation failed",
+    "unitAlreadyReserved": "Unit is already reserved",
+    "serverError": "Server Error. Please try again later.",
+    "ok": "OK",
+    "success": "Success",
+    "error": "Error",
+  "fillAllFields": "Fill all Fields"
+
 }
