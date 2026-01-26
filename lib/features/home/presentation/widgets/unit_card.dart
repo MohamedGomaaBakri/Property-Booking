@@ -25,10 +25,8 @@ class UnitCard extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => UnitDetailsView(
-              units: units,
-              initialIndex: index,
-            ),
+            builder: (context) =>
+                UnitDetailsView(units: units, initialIndex: index),
           ),
         );
       },
@@ -208,7 +206,7 @@ class UnitCard extends StatelessWidget {
         return LinearGradient(
           colors: [
             ColorManager.white.withValues(alpha: 0.15),
-            ColorManager.white.withValues(alpha: 0.05),
+            ColorManager.white.withValues(alpha: 0.4),
           ],
         );
       case 3: // Sold - Reddish Gradient

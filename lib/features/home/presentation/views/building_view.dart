@@ -10,6 +10,7 @@ import '../../../../core/utils/manager/color_manager/color_manager.dart';
 import '../../../../core/utils/manager/assets_manager/image_manager.dart';
 import '../../../../core/widgets/Images/custome_image.dart';
 import '../widgets/model_section.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class BuildingView extends StatefulWidget {
   final BuildingModel building;
@@ -40,6 +41,7 @@ class _BuildingViewState extends State<BuildingView> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: ColorManager.black.withValues(alpha: 0.4),
       appBar: AppBar(
@@ -55,7 +57,7 @@ class _BuildingViewState extends State<BuildingView> {
         title: Text(
           widget.building.buildingNameA ??
               widget.building.buildingNameE ??
-              'المبنى',
+              localizations.building,
           style: TextStyle(
             color: ColorManager.white,
             fontSize: 22.sp,
@@ -119,7 +121,7 @@ class _BuildingViewState extends State<BuildingView> {
                         ),
                         SizedBox(height: 16.h),
                         Text(
-                          'خطأ في تحميل الوحدات',
+                          localizations.errorLoadingUnits,
                           style: TextStyle(
                             fontSize: 18.sp,
                             fontWeight: FontWeight.w600,
@@ -128,7 +130,7 @@ class _BuildingViewState extends State<BuildingView> {
                         ),
                         SizedBox(height: 8.h),
                         Text(
-                          'يرجى المحاولة مرة أخرى',
+                          localizations.tryAgain,
                           style: TextStyle(
                             fontSize: 14.sp,
                             color: ColorManager.white.withValues(alpha: 0.7),
@@ -154,7 +156,7 @@ class _BuildingViewState extends State<BuildingView> {
                             ),
                           ),
                           child: Text(
-                            'إعادة المحاولة',
+                            localizations.retry,
                             style: TextStyle(
                               color: ColorManager.white,
                               fontSize: 14.sp,
@@ -178,7 +180,7 @@ class _BuildingViewState extends State<BuildingView> {
                         ),
                         SizedBox(height: 16.h),
                         Text(
-                          'لا توجد وحدات متاحة',
+                          localizations.noUnitsAvailable,
                           style: TextStyle(
                             fontSize: 18.sp,
                             fontWeight: FontWeight.w600,
@@ -187,7 +189,7 @@ class _BuildingViewState extends State<BuildingView> {
                         ),
                         SizedBox(height: 8.h),
                         Text(
-                          'لم يتم العثور على وحدات في هذا المبنى',
+                          localizations.noUnitsFoundInBuilding,
                           style: TextStyle(
                             fontSize: 14.sp,
                             color: ColorManager.white.withValues(alpha: 0.7),
@@ -198,15 +200,18 @@ class _BuildingViewState extends State<BuildingView> {
                   );
                 }
 
-                final List<UnitModel> allUnits = snapshot.data![0] as List<UnitModel>;
+                final List<UnitModel> allUnits =
+                    snapshot.data![0] as List<UnitModel>;
                 final photos = snapshot.data![1] as List<BuildingPhotoModel>;
 
                 // Apply filtering
                 final filteredUnits = _selectedStatus == null
                     ? allUnits
                     : allUnits
-                        .where((u) => u.unitStatus?.toInt() == _selectedStatus)
-                        .toList();
+                          .where(
+                            (u) => u.unitStatus?.toInt() == _selectedStatus,
+                          )
+                          .toList();
 
                 log(
                   '✅ Displaying ${filteredUnits.length} units and ${photos.length} photos',
@@ -238,8 +243,7 @@ class _BuildingViewState extends State<BuildingView> {
                 final allModelCodes = {
                   ...unitsByModel.keys,
                   ...photosByModel.keys,
-                }.toList()
-                  ..sort();
+                }.toList()..sort();
 
                 return RefreshIndicator(
                   color: ColorManager.availableColor,
@@ -278,22 +282,22 @@ class _BuildingViewState extends State<BuildingView> {
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
                               _buildLegendItem(
-                                'الكل',
+                                localizations.all,
                                 ColorManager.white,
                                 null,
                               ),
                               _buildLegendItem(
-                                'متاحة',
+                                localizations.available,
                                 ColorManager.availableColor,
                                 0,
                               ),
                               _buildLegendItem(
-                                'محجوزة',
+                                localizations.reserved,
                                 ColorManager.white.withValues(alpha: 0.4),
                                 1,
                               ),
                               _buildLegendItem(
-                                'مباعة',
+                                localizations.sold,
                                 ColorManager.soldColor,
                                 3,
                               ),
@@ -306,7 +310,7 @@ class _BuildingViewState extends State<BuildingView> {
                       final modelCode = allModelCodes[index - 1];
                       final modelUnits = unitsByModel[modelCode] ?? [];
                       final modelPhotos = photosByModel[modelCode] ?? [];
-                      
+
                       // Skip if filtering and no units for this model
                       if (_selectedStatus != null && modelUnits.isEmpty) {
                         return const SizedBox.shrink();
@@ -346,9 +350,7 @@ class _BuildingViewState extends State<BuildingView> {
         duration: const Duration(milliseconds: 300),
         padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
         decoration: BoxDecoration(
-          color: isSelected
-              ? color.withValues(alpha: 0.2)
-              : Colors.transparent,
+          color: isSelected ? color.withValues(alpha: 0.2) : Colors.transparent,
           borderRadius: BorderRadius.circular(8.r),
           border: Border.all(
             color: isSelected ? color : Colors.transparent,
@@ -375,7 +377,9 @@ class _BuildingViewState extends State<BuildingView> {
               label,
               style: TextStyle(
                 fontSize: 13.sp,
-                color: isSelected ? ColorManager.white : ColorManager.white.withValues(alpha: 0.7),
+                color: isSelected
+                    ? ColorManager.white
+                    : ColorManager.white.withValues(alpha: 0.7),
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
               ),
             ),

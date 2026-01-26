@@ -289,4 +289,55 @@ class HomeDatasource {
       return [];
     }
   }
+
+  Future<List<String>> getUsers() async {
+    try {
+      // Assuming this endpoint returns a list of users/customers
+      final response = await apiService.get(endPoint: ApiConstants.getUser);
+      if (response['items'] is! List) return [];
+      final List<dynamic> items = response['items'];
+      return items
+          .map((item) => item['emp_name']?.toString() ?? '')
+          .where((name) => name.isNotEmpty)
+          .toList();
+    } catch (e) {
+      log('❌ Error in getUsers: $e', name: 'HomeDatasource');
+      return [];
+    }
+  }
+
+  Future<void> reserveUnit({
+    required int salesCode,
+    required num buildingCode,
+    required String unitCode,
+    required String customerName,
+    required String selectedUser,
+    required String reservationDate,
+    required String contractDate,
+    required String description,
+    required num meterPrice,
+    required num unitArea,
+    required num totalPrice,
+    required num paymentValue,
+    required String dueDate,
+  }) async {
+    log('--- Reservation Request ---', name: 'HomeDatasource');
+    log('Sales Code: $salesCode', name: 'HomeDatasource');
+    log('Building Code: $buildingCode', name: 'HomeDatasource');
+    log('Unit Code: $unitCode', name: 'HomeDatasource');
+    log('Customer Name (Manual): $customerName', name: 'HomeDatasource');
+    log('Selected User (Dropdown): $selectedUser', name: 'HomeDatasource');
+    log('Reservation Date: $reservationDate', name: 'HomeDatasource');
+    log('Contract Date: $contractDate', name: 'HomeDatasource');
+    log('Description: $description', name: 'HomeDatasource');
+    log('Meter Price: $meterPrice', name: 'HomeDatasource');
+    log('Unit Area: $unitArea', name: 'HomeDatasource');
+    log('Total Price (Calc): $totalPrice', name: 'HomeDatasource');
+    log('Payment Value: $paymentValue', name: 'HomeDatasource');
+    log('Due Date: $dueDate', name: 'HomeDatasource');
+    log('---------------------------', name: 'HomeDatasource');
+
+    // TODO: Implement actual POST request here when endpoint is ready
+    // await apiService.post(endPoint: ApiConstants.reserveUnit, data: {...});
+  }
 }

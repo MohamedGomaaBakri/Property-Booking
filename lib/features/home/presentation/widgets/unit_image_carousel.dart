@@ -5,23 +5,26 @@ import '../../../../core/utils/manager/assets_manager/image_manager.dart';
 import '../../../../core/widgets/Images/custome_image.dart';
 
 class UnitImageCarousel extends StatelessWidget {
-  const UnitImageCarousel({super.key});
+  final List<String> images;
+  const UnitImageCarousel({super.key, required this.images});
 
   @override
   Widget build(BuildContext context) {
-    final List<String> images = [
-      ImageManager.building1Image,
-      ImageManager.building2Image,
-    ];
+    final List<String> displayImages = images.isNotEmpty
+        ? images
+        : [
+            ImageManager.building1Image,
+            ImageManager.building2Image,
+          ];
 
     return CarouselSlider(
       options: CarouselOptions(
         height: 250.h,
         viewportFraction: 1.0,
-        autoPlay: true,
+        autoPlay: displayImages.length > 1,
         enlargeCenterPage: false,
       ),
-      items: images.map((imagePath) {
+      items: displayImages.map((imagePath) {
         return Stack(
           children: [
             CustomImage(
