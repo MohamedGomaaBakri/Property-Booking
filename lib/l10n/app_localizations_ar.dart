@@ -162,5 +162,56 @@ class AppLocalizationsAr extends AppLocalizations {
   String get fullDescription => 'قيمة الوصف الكامل :';
 
   @override
-  String get logout => 'Logout';
+  String get logout => 'تسجيل الخروج';
+
+  @override
+  String get all => 'الكل';
+
+  @override
+  String get reservationDetails => 'تفاصيل الحجز';
+
+  @override
+  String get customerNameLabel => 'اسم العميل';
+
+  @override
+  String get customerDescription => 'وصف العميل';
+
+  @override
+  String get resDate => 'تاريخ الحجز';
+
+  @override
+  String get contDate => 'تاريخ التعاقد';
+
+  @override
+  String get description => 'الوصف';
+
+  @override
+  String get notesHint => 'ملاحظات...';
+
+  @override
+  String get enterName => 'ادخل الاسم';
+
+  @override
+  String get totalPriceAuto => 'اجمالي السعر (تلقائي)';
+
+  @override
+  String get userInput => 'مدخلات العميل';
+
+  @override
+  String get payValue => 'قيمة الدفعة';
+
+  @override
+  String get dueDate => 'تاريخ الاستحقاق';
+
+  @override
+  String get noUnitsAvailable => 'لا توجد وحدات متاحة';
+
+  @override
+  String get noUnitsFoundInBuilding => 'لم يتم العثور على وحدات في هذا المبنى';
+
+  @override
+  String get errorLoadingUnits => 'خطأ في تحميل الوحدات';
+
+  @override
+  String get building => 'المبنى';
 }

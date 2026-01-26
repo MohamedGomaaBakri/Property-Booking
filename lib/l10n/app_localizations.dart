@@ -409,6 +409,108 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Logout'**
   String get logout;
+
+  /// No description provided for @all.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get all;
+
+  /// No description provided for @reservationDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Reservation Details'**
+  String get reservationDetails;
+
+  /// No description provided for @customerNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer Name'**
+  String get customerNameLabel;
+
+  /// No description provided for @customerDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer Description'**
+  String get customerDescription;
+
+  /// No description provided for @resDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Res. Date'**
+  String get resDate;
+
+  /// No description provided for @contDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Cont. Date'**
+  String get contDate;
+
+  /// No description provided for @description.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get description;
+
+  /// No description provided for @notesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes...'**
+  String get notesHint;
+
+  /// No description provided for @enterName.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter Name'**
+  String get enterName;
+
+  /// No description provided for @totalPriceAuto.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Price (Auto)'**
+  String get totalPriceAuto;
+
+  /// No description provided for @userInput.
+  ///
+  /// In en, this message translates to:
+  /// **'User Input'**
+  String get userInput;
+
+  /// No description provided for @payValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay Value'**
+  String get payValue;
+
+  /// No description provided for @dueDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Due Date'**
+  String get dueDate;
+
+  /// No description provided for @noUnitsAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No units available'**
+  String get noUnitsAvailable;
+
+  /// No description provided for @noUnitsFoundInBuilding.
+  ///
+  /// In en, this message translates to:
+  /// **'No units found in this building'**
+  String get noUnitsFoundInBuilding;
+
+  /// No description provided for @errorLoadingUnits.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading units'**
+  String get errorLoadingUnits;
+
+  /// No description provided for @building.
+  ///
+  /// In en, this message translates to:
+  /// **'Building'**
+  String get building;
 }
 
 class _AppLocalizationsDelegate

@@ -51,5 +51,22 @@
     "sold": "Sold",
     "unitArea": "Unit Area",
     "fullDescription": "Full Description",
-    "logout": "Logout"
+    "logout": "Logout",
+    "all": "All",
+    "reservationDetails": "Reservation Details",
+    "customerNameLabel": "Customer Name",
+    "customerDescription": "Customer Description",
+    "resDate": "Res. Date",
+    "contDate": "Cont. Date",
+    "description": "Description",
+    "notesHint": "Notes...",
+    "enterName": "Enter Name",
+    "totalPriceAuto": "Total Price (Auto)",
+    "userInput": "User Input",
+    "payValue": "Pay Value",
+    "dueDate": "Due Date",
+    "noUnitsAvailable": "No units available",
+    "noUnitsFoundInBuilding": "No units found in this building",
+    "errorLoadingUnits": "Error loading units",
+    "building": "Building"
 }

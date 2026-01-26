@@ -163,4 +163,55 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get logout => 'Logout';
+
+  @override
+  String get all => 'All';
+
+  @override
+  String get reservationDetails => 'Reservation Details';
+
+  @override
+  String get customerNameLabel => 'Customer Name';
+
+  @override
+  String get customerDescription => 'Customer Description';
+
+  @override
+  String get resDate => 'Res. Date';
+
+  @override
+  String get contDate => 'Cont. Date';
+
+  @override
+  String get description => 'Description';
+
+  @override
+  String get notesHint => 'Notes...';
+
+  @override
+  String get enterName => 'Enter Name';
+
+  @override
+  String get totalPriceAuto => 'Total Price (Auto)';
+
+  @override
+  String get userInput => 'User Input';
+
+  @override
+  String get payValue => 'Pay Value';
+
+  @override
+  String get dueDate => 'Due Date';
+
+  @override
+  String get noUnitsAvailable => 'No units available';
+
+  @override
+  String get noUnitsFoundInBuilding => 'No units found in this building';
+
+  @override
+  String get errorLoadingUnits => 'Error loading units';
+
+  @override
+  String get building => 'Building';
 }
