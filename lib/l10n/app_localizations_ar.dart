@@ -214,4 +214,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get building => 'المبنى';
+
+  @override
+  String get close => 'إغلاق';
 }

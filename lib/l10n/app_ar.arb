@@ -68,5 +68,6 @@
     "noUnitsAvailable": "لا توجد وحدات متاحة",
     "noUnitsFoundInBuilding": "لم يتم العثور على وحدات في هذا المبنى",
     "errorLoadingUnits": "خطأ في تحميل الوحدات",
-    "building": "المبنى"
+    "building": "المبنى",
+    "close": "إغلاق"
 }

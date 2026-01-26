@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:intl/intl.dart';
 import '../../../../core/utils/manager/color_manager/color_manager.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../data/models/unit_model.dart';
 import '../views/unit_details_view.dart';
 
@@ -47,7 +49,7 @@ class UnitCard extends StatelessWidget {
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.2),
               blurRadius: 4,
-              offset: Offset(0, 2),
+              offset: const Offset(0, 2),
             ),
           ],
         ),
@@ -61,7 +63,7 @@ class UnitCard extends StatelessWidget {
               shadows: [
                 Shadow(
                   color: Colors.black.withValues(alpha: 0.5),
-                  offset: Offset(0, 1),
+                  offset: const Offset(0, 1),
                   blurRadius: 2,
                 ),
               ],
@@ -74,6 +76,14 @@ class UnitCard extends StatelessWidget {
   }
 
   void _showUnitDetails(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    final formatter = NumberFormat('#,##0.00', 'en_US');
+
+    String formatValue(num? value) {
+      if (value == null) return "-";
+      return formatter.format(value);
+    }
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -93,7 +103,7 @@ class UnitCard extends StatelessWidget {
             ),
           ),
           child: Text(
-            'تفاصيل الوحدة',
+            localizations.unitDetails,
             style: TextStyle(
               color: ColorManager.availableColor,
               fontSize: 22.sp,
@@ -106,21 +116,30 @@ class UnitCard extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildDetailRow('الكود:', unit.unitCode ?? 'N/A'),
-            SizedBox(height: 16.h),
-            _buildDetailRow('الاسم:', unit.unitNameA ?? 'غير متوفر'),
+            _buildDetailRow(
+              '${localizations.userCode}:',
+              unit.unitCode ?? 'N/A',
+            ),
             SizedBox(height: 16.h),
             _buildDetailRow(
-              'الحالة:',
-              _getUnitStatusText(unit.unitStatus?.toInt()),
+              '${localizations.customerNameLabel}:',
+              unit.unitNameA ?? '-',
+            ),
+            SizedBox(height: 16.h),
+            _buildDetailRow(
+              '${localizations.unitStatus}:',
+              _getUnitStatusText(context, unit.unitStatus?.toInt()),
               valueColor: _getStatusTextColor(unit.unitStatus?.toInt()),
             ),
             SizedBox(height: 16.h),
-            _buildDetailRow('المساحة:', unit.unitArea?.toString() ?? ""),
+            _buildDetailRow(
+              '${localizations.unitArea}:',
+              formatValue(unit.unitArea),
+            ),
             SizedBox(height: 16.h),
             _buildDetailRow(
-              'سعر المتر:',
-              unit.meterPriceInst?.toString() ?? "-",
+              '${localizations.meterPrice}:',
+              formatValue(unit.meterPriceInst),
             ),
           ],
         ),
@@ -131,7 +150,7 @@ class UnitCard extends StatelessWidget {
               foregroundColor: ColorManager.availableColor,
             ),
             child: Text(
-              'إغلاق',
+              localizations.close,
               style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
             ),
           ),
@@ -167,16 +186,17 @@ class UnitCard extends StatelessWidget {
     );
   }
 
-  String _getUnitStatusText(int? status) {
+  String _getUnitStatusText(BuildContext context, int? status) {
+    final localizations = AppLocalizations.of(context)!;
     switch (status) {
       case 0:
-        return 'متاحة';
+        return localizations.available;
       case 1:
-        return 'محجوزة';
+        return localizations.reserved;
       case 3:
-        return 'مباعة';
+        return localizations.sold;
       default:
-        return 'غير معروف';
+        return "-";
     }
   }
 

@@ -1,4 +1,6 @@
+import 'dart:developer';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -49,6 +51,7 @@ class _UnitDetailsViewState extends State<UnitDetailsView> {
   DateTime _dueDate = DateTime.now();
 
   final DateFormat _dateFormatter = DateFormat('dd/MM/yyyy');
+  final NumberFormat _numberFormatter = NumberFormat('#,##0.00', 'en_US');
 
   @override
   void initState() {
@@ -67,17 +70,27 @@ class _UnitDetailsViewState extends State<UnitDetailsView> {
 
   void _initUnitControllers() {
     final unit = widget.units[_currentIndex];
-    _meterPriceController.text = unit.meterPriceInst?.toString() ?? "0";
+    _meterPriceController.text =
+        _numberFormatter.format(unit.meterPriceInst ?? 0);
     _unitAreaController.text = unit.unitArea?.toString() ?? "0";
     _calculateTotal();
   }
 
+  double _parseFormatted(String text) {
+    return double.tryParse(text.replaceAll(',', '')) ?? 0;
+  }
+
   void _calculateTotal() {
-    final price = double.tryParse(_meterPriceController.text) ?? 0;
-    final area = double.tryParse(_unitAreaController.text) ?? 0;
+    final price = _parseFormatted(_meterPriceController.text);
+    final area = _parseFormatted(_unitAreaController.text);
     setState(() {
-      _totalPriceController.text = (price * area).toStringAsFixed(2);
+      _totalPriceController.text = _numberFormatter.format(price * area);
     });
+  }
+
+  String _formatValue(num? value) {
+    if (value == null) return "-";
+    return _numberFormatter.format(value);
   }
 
   Future<void> _fetchUsers() async {
@@ -191,9 +204,8 @@ class _UnitDetailsViewState extends State<UnitDetailsView> {
         itemBuilder: (context, index) {
           final unit = widget.units[index];
           final status = unit.unitStatus?.toInt() ?? 4;
-          final fullDescription = isArabic
-              ? (unit.unitNameA ?? "-")
-              : (unit.unitNameE ?? "-");
+          final fullDescription =
+              isArabic ? (unit.unitNameA ?? "-") : (unit.unitNameE ?? "-");
 
           return SingleChildScrollView(
             child: Column(
@@ -243,15 +255,15 @@ class _UnitDetailsViewState extends State<UnitDetailsView> {
                       ),
                       UnitDetailItem(
                         label: localizations.unitArea,
-                        value: unit.unitArea?.toString() ?? "-",
+                        value: _formatValue(unit.unitArea),
                       ),
                       UnitDetailItem(
                         label: localizations.installment,
-                        value: unit.calcInstValUnit?.toString() ?? "-",
+                        value: _formatValue(unit.calcInstValUnit),
                       ),
                       UnitDetailItem(
                         label: localizations.totalPrice,
-                        value: unit.totPrice?.toString() ?? "-",
+                        value: _formatValue(unit.totPrice),
                       ),
                       UnitDetailItem(
                         label: localizations.unitStatus,
@@ -260,7 +272,7 @@ class _UnitDetailsViewState extends State<UnitDetailsView> {
                       ),
                       UnitDetailItem(
                         label: localizations.meterPrice,
-                        value: unit.meterPriceInst?.toString() ?? "-",
+                        value: _formatValue(unit.meterPriceInst),
                       ),
                       UnitDetailItem(
                         label: localizations.notes,
@@ -308,9 +320,7 @@ class _UnitDetailsViewState extends State<UnitDetailsView> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  _buildLabel(
-                                    localizations.resDate,
-                                  ),
+                                  _buildLabel(localizations.resDate),
                                   _buildDatePickerField(_reservationDate, (
                                     date,
                                   ) {
@@ -324,9 +334,7 @@ class _UnitDetailsViewState extends State<UnitDetailsView> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  _buildLabel(
-                                    localizations.contDate,
-                                  ),
+                                  _buildLabel(localizations.contDate),
                                   _buildDatePickerField(_contractDate, (date) {
                                     _contractDate = date;
                                   }),
@@ -353,12 +361,13 @@ class _UnitDetailsViewState extends State<UnitDetailsView> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  _buildLabel(
-                                    localizations.meterPrice,
-                                  ),
+                                  _buildLabel(localizations.meterPrice),
                                   _buildTextField(
                                     _meterPriceController,
                                     isNumber: true,
+                                    formatters: [
+                                      ThousandsSeparatorInputFormatter(),
+                                    ],
                                   ),
                                 ],
                               ),
@@ -382,12 +391,13 @@ class _UnitDetailsViewState extends State<UnitDetailsView> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  _buildLabel(
-                                    localizations.unitArea,
-                                  ),
+                                  _buildLabel(localizations.unitArea),
                                   _buildTextField(
                                     _unitAreaController,
                                     isNumber: true,
+                                    formatters: [
+                                      ThousandsSeparatorInputFormatter(),
+                                    ],
                                   ),
                                 ],
                               ),
@@ -396,9 +406,7 @@ class _UnitDetailsViewState extends State<UnitDetailsView> {
                         ),
                         SizedBox(height: 16.h),
                         const Divider(color: Colors.white24),
-                        _buildLabel(
-                          localizations.totalPriceAuto,
-                        ),
+                        _buildLabel(localizations.totalPriceAuto),
                         _buildTextField(
                           _totalPriceController,
                           enabled: false,
@@ -424,12 +432,13 @@ class _UnitDetailsViewState extends State<UnitDetailsView> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  _buildLabel(
-                                    localizations.payValue,
-                                  ),
+                                  _buildLabel(localizations.payValue),
                                   _buildTextField(
                                     _paymentValueController,
                                     isNumber: true,
+                                    formatters: [
+                                      ThousandsSeparatorInputFormatter(),
+                                    ],
                                   ),
                                 ],
                               ),
@@ -439,9 +448,7 @@ class _UnitDetailsViewState extends State<UnitDetailsView> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  _buildLabel(
-                                    localizations.dueDate,
-                                  ),
+                                  _buildLabel(localizations.dueDate),
                                   _buildDatePickerField(_dueDate, (date) {
                                     _dueDate = date;
                                   }),
@@ -459,9 +466,8 @@ class _UnitDetailsViewState extends State<UnitDetailsView> {
                           height: 50.h,
                           child: ElevatedButton(
                             onPressed: () {
-                              final authState = context
-                                  .read<AuthCubitCubit>()
-                                  .state;
+                              final authState =
+                                  context.read<AuthCubitCubit>().state;
                               final salesCode =
                                   authState
                                       .userModel
@@ -483,24 +489,18 @@ class _UnitDetailsViewState extends State<UnitDetailsView> {
                                   _contractDate,
                                 ),
                                 description: _descriptionController.text,
-                                meterPrice:
-                                    double.tryParse(
-                                      _meterPriceController.text,
-                                    ) ??
-                                    0,
-                                unitArea:
-                                    double.tryParse(_unitAreaController.text) ??
-                                    0,
-                                totalPrice:
-                                    double.tryParse(
-                                      _totalPriceController.text,
-                                    ) ??
-                                    0,
-                                paymentValue:
-                                    double.tryParse(
-                                      _paymentValueController.text,
-                                    ) ??
-                                    0,
+                                meterPrice: _parseFormatted(
+                                  _meterPriceController.text,
+                                ),
+                                unitArea: _parseFormatted(
+                                  _unitAreaController.text,
+                                ),
+                                totalPrice: _parseFormatted(
+                                  _totalPriceController.text,
+                                ),
+                                paymentValue: _parseFormatted(
+                                  _paymentValueController.text,
+                                ),
                                 dueDate: _dateFormatter.format(_dueDate),
                               );
                             },
@@ -555,16 +555,21 @@ class _UnitDetailsViewState extends State<UnitDetailsView> {
     bool enabled = true,
     String? suffix,
     Color? color,
+    List<TextInputFormatter>? formatters,
   }) {
     return TextField(
       controller: controller,
       enabled: enabled,
       maxLines: maxLines,
+      inputFormatters: formatters,
       style: TextStyle(
         color: color ?? ColorManager.white,
         fontWeight: enabled ? FontWeight.normal : FontWeight.bold,
       ),
-      keyboardType: isNumber ? TextInputType.number : TextInputType.text,
+      keyboardType:
+          isNumber
+              ? const TextInputType.numberWithOptions(decimal: true)
+              : TextInputType.text,
       decoration: InputDecoration(
         hintText: hint,
         suffixText: suffix,
@@ -632,49 +637,50 @@ class _UnitDetailsViewState extends State<UnitDetailsView> {
           color: ColorManager.availableColor.withValues(alpha: 0.3),
         ),
       ),
-      child: _isLoadingUsers
-          ? Center(
-              child: Padding(
-                padding: EdgeInsets.all(8.h),
-                child: SizedBox(
-                  height: 20.h,
-                  width: 20.h,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
+      child:
+          _isLoadingUsers
+              ? Center(
+                child: Padding(
+                  padding: EdgeInsets.all(8.h),
+                  child: SizedBox(
+                    height: 20.h,
+                    width: 20.h,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: ColorManager.availableColor,
+                    ),
+                  ),
+                ),
+              )
+              : DropdownButtonHideUnderline(
+                child: DropdownButton<String>(
+                  value: _selectedUser,
+                  dropdownColor: ColorManager.darkGrayColor,
+                  icon: Icon(
+                    Icons.arrow_drop_down,
                     color: ColorManager.availableColor,
                   ),
-                ),
-              ),
-            )
-          : DropdownButtonHideUnderline(
-              child: DropdownButton<String>(
-                value: _selectedUser,
-                dropdownColor: ColorManager.darkGrayColor,
-                icon: Icon(
-                  Icons.arrow_drop_down,
-                  color: ColorManager.availableColor,
-                ),
-                isExpanded: true,
-                style: TextStyle(color: ColorManager.white),
-                hint: Text(
-                  hint,
-                  style: TextStyle(
-                    color: ColorManager.white.withValues(alpha: 0.3),
+                  isExpanded: true,
+                  style: TextStyle(color: ColorManager.white),
+                  hint: Text(
+                    hint,
+                    style: TextStyle(
+                      color: ColorManager.white.withValues(alpha: 0.3),
+                    ),
                   ),
+                  items: _users.map((String user) {
+                    return DropdownMenuItem<String>(
+                      value: user,
+                      child: Text(user),
+                    );
+                  }).toList(),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      _selectedUser = newValue;
+                    });
+                  },
                 ),
-                items: _users.map((String user) {
-                  return DropdownMenuItem<String>(
-                    value: user,
-                    child: Text(user),
-                  );
-                }).toList(),
-                onChanged: (String? newValue) {
-                  setState(() {
-                    _selectedUser = newValue;
-                  });
-                },
               ),
-            ),
     );
   }
 
@@ -698,5 +704,55 @@ class _UnitDetailsViewState extends State<UnitDetailsView> {
         ),
       ),
     );
+  }
+}
+
+class ThousandsSeparatorInputFormatter extends TextInputFormatter {
+  static final NumberFormat _formatter = NumberFormat('#,##0.##', 'en_US');
+
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    if (newValue.text.isEmpty) {
+      return newValue.copyWith(text: '');
+    }
+
+    // Allow typing only numbers, commas and one dot
+    String baseText = newValue.text.replaceAll(',', '');
+
+    // Check if it's a valid partial number
+    if (baseText == '.' || baseText == '-') return newValue;
+
+    try {
+      double value = double.parse(baseText);
+
+      // Handle the case where the user is typing a decimal
+      if (newValue.text.endsWith('.')) {
+        return newValue;
+      }
+
+      // Format the number
+      String formatted = _formatter.format(value);
+
+      // Special handling for fractional parts to allow typing .0 or .01
+      if (baseText.contains('.')) {
+        List<String> parts = baseText.split('.');
+        String integerPart = _formatter.format(int.parse(parts[0]));
+        String decimalPart = parts[1];
+        if (decimalPart.length > 2) {
+          decimalPart = decimalPart.substring(0, 2);
+        }
+        formatted = '$integerPart.$decimalPart';
+      }
+
+      return newValue.copyWith(
+        text: formatted,
+        selection: TextSelection.collapsed(offset: formatted.length),
+      );
+    } catch (e) {
+      return oldValue;
+    }
   }
 }

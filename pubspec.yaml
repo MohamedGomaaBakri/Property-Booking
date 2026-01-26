@@ -59,6 +59,7 @@ dependencies:
   iconify_flutter: ^0.0.7
   intl: ^0.20.2
   geocoding: ^4.0.0
+  flutter_multi_formatter: ^2.13.10
 
 dev_dependencies:
   flutter_test:

@@ -214,4 +214,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get building => 'Building';
+
+  @override
+  String get close => 'Close';
 }

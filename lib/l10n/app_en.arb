@@ -68,5 +68,6 @@
     "noUnitsAvailable": "No units available",
     "noUnitsFoundInBuilding": "No units found in this building",
     "errorLoadingUnits": "Error loading units",
-    "building": "Building"
+    "building": "Building",
+    "close": "Close"
 }

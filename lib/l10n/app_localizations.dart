@@ -511,6 +511,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Building'**
   String get building;
+
+  /// No description provided for @close.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get close;
 }
 
 class _AppLocalizationsDelegate
