@@ -10,4 +10,5 @@ class ApiConstants {
   static const String getUnitsByBuilding = 'Get_Unit_names/';
   static const String getAllPhotosByBuilding = 'Get_AllPhoto_Buildings/';
   static const String getModelPhotoByBuilding = 'Get_Photo_Building';
+  static const String getAllPhotosForUnit = 'Get_Photo_Building';
 }

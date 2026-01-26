@@ -7,6 +7,7 @@ import 'package:propertybooking/features/home/data/models/building_photo_model.d
 import 'package:propertybooking/features/home/data/models/land_model.dart';
 import 'package:propertybooking/features/home/data/models/project_model.dart';
 import 'package:propertybooking/features/home/data/models/unit_model.dart';
+import 'package:propertybooking/features/home/data/models/unit_photo_model.dart';
 import 'package:propertybooking/features/home/data/models/zone_model.dart';
 
 class HomeDatasource {
@@ -246,5 +247,46 @@ class HomeDatasource {
     int docSerial,
   ) {
     return "${ApiConstants.PropertyBookingUrl}${ApiConstants.getModelPhotoByBuilding}?p_building_code=$buildingID&model=$modelCode&doc_serial=$docSerial";
+  }
+
+  Future<List<UnitPhotoModel>> getAllPhotoForUnit(
+    int buildingID,
+    int unitCode,
+  ) async {
+    try {
+      final response = await apiService.get(
+        endPoint: ApiConstants.getAllPhotosForUnit,
+        queryParameters: {"p_building_code": buildingID, "unit_code": unitCode},
+      );
+      if (response['items'] is! List) {
+        log('❌ Response items is not a List', name: 'HomeDatasource');
+        return [];
+      }
+
+      final List<dynamic> items = response['items'];
+
+      final photos = items
+          .map<UnitPhotoModel?>((item) {
+            try {
+              return UnitPhotoModel.fromJson(item);
+            } catch (e) {
+              log(
+                '❌ Error parsing item: $e\nItem: $item',
+                name: 'HomeDatasource',
+              );
+              return null;
+            }
+          })
+          .whereType<UnitPhotoModel>()
+          .toList();
+
+      log(
+        '✅ Successfully parsed ${photos.length} out of ${items.length} photos',
+      );
+      return photos;
+    } catch (e) {
+      log('❌ Error in getAllPhotosForUnit: $e', name: 'HomeDatasource');
+      return [];
+    }
   }
 }
