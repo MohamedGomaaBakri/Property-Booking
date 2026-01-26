@@ -16,7 +16,7 @@ class UnitModel {
   dynamic activityCode;
   num? unitArea;
   dynamic actUnitArea;
-  double? meterPriceInst;
+  num? meterPriceInst;
   dynamic meterPriceCash;
   dynamic instMonths;
   dynamic instNo;
