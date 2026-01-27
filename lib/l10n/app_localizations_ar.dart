@@ -244,4 +244,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get fillAllFields => 'املأ جميع البيانات';
+
+  @override
+  String get fieldRequired => 'هذا الحقل مطلوب';
 }

@@ -10,6 +10,9 @@ import 'package:propertybooking/features/auth/presentation/manager/auth_cubit/au
 import 'package:provider/provider.dart';
 import 'package:propertybooking/l10n/app_localizations.dart';
 import 'package:propertybooking/core/providers/language_provider.dart';
+import 'features/home/presentation/providers/customer_provider.dart';
+import 'features/home/presentation/providers/reservation_form_provider.dart';
+import 'package:bot_toast/bot_toast.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,8 +27,12 @@ class PropertyBooking extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => LanguageProvider(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => LanguageProvider()),
+        ChangeNotifierProvider(create: (_) => CustomerProvider()),
+        ChangeNotifierProvider(create: (_) => ReservationFormProvider()),
+      ],
       child: Consumer<LanguageProvider>(
         builder: (context, languageProvider, _) {
           return ScreenUtilInit(
@@ -37,6 +44,8 @@ class PropertyBooking extends StatelessWidget {
                 create: (context) => AuthCubitCubit(getIt<AuthRepo>()),
                 child: MaterialApp(
                   debugShowCheckedModeBanner: false,
+                  builder: BotToastInit(),
+                  navigatorObservers: [BotToastNavigatorObserver()],
                   locale: languageProvider.currentLocale,
                   supportedLocales: const [Locale('ar'), Locale('en')],
                   localizationsDelegates: const [

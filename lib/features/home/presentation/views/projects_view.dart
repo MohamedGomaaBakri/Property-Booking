@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:propertybooking/core/utils/navigation/navigation_context_extension.dart';
 import 'package:propertybooking/core/utils/navigation/router_path.dart';
@@ -11,6 +12,7 @@ import 'package:propertybooking/l10n/app_localizations.dart';
 import '../../../../core/utils/manager/color_manager/color_manager.dart';
 import '../../../../core/utils/manager/assets_manager/image_manager.dart';
 import '../../../../core/widgets/Images/custome_image.dart';
+import '../providers/customer_provider.dart';
 
 class ProjectsView extends StatefulWidget {
   final ZoneModel zone;
@@ -35,6 +37,10 @@ class _ProjectsViewState extends State<ProjectsView> {
     _projectsFuture = widget.homeDatasource.getProjectByZone(
       widget.zone.buildingCode!,
     );
+    // Fetch customers before entering further
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<CustomerProvider>().fetchCustomers(widget.homeDatasource);
+    });
   }
 
   @override

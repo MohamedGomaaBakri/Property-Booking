@@ -78,6 +78,7 @@
     "ok": "OK",
     "success": "Success",
     "error": "Error",
-  "fillAllFields": "Fill all Fields"
+  "fillAllFields": "Fill all Fields",
+  "fieldRequired": "This field is required"
 
 }

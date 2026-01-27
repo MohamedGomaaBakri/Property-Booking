@@ -78,5 +78,6 @@
     "ok": "حسناً",
     "success": "نجاح",
     "error": "خطأ",
-    "fillAllFields": "املأ جميع البيانات"
+    "fillAllFields": "املأ جميع البيانات",
+    "fieldRequired": "هذا الحقل مطلوب"
 }

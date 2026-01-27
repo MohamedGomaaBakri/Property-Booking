@@ -13,6 +13,9 @@ import 'package:propertybooking/features/auth/data/models/user_model.dart';
 import 'package:propertybooking/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../core/utils/manager/assets_manager/image_manager.dart';
+import '../../../../core/widgets/Images/custome_image.dart';
+
 class HomeAppBarWidget extends StatefulWidget implements PreferredSizeWidget {
   final UserModel userModel;
 
@@ -125,10 +128,13 @@ class _HomeAppBarWidgetState extends State<HomeAppBarWidget> {
                 width: 1.5.w,
               ),
             ),
-            child: Icon(
-              Icons.person_outline_rounded,
-              color: ColorManager.availableColor,
-              size: 30.sp,
+            child: ClipOval(
+              child: CustomImage(
+                image: ImageManager.profileImage,
+                fit: BoxFit.cover,
+                height: 54.h,
+                width: 54.w,
+              ),
             ),
           ),
           SizedBox(width: 12.w),
@@ -164,10 +170,7 @@ class _HomeAppBarWidgetState extends State<HomeAppBarWidget> {
       crossAxisAlignment: CrossAxisAlignment.end,
       mainAxisSize: MainAxisSize.min,
       children: [
-        _buildPillIndicator(
-          icon: Icons.access_time_rounded,
-          text: currentTime,
-        ),
+        _buildPillIndicator(icon: Icons.access_time_rounded, text: currentTime),
         SizedBox(height: 6.h),
         _buildPillIndicator(
           icon: Icons.location_on_rounded,

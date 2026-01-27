@@ -244,4 +244,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get fillAllFields => 'Fill all Fields';
+
+  @override
+  String get fieldRequired => 'This field is required';
 }
