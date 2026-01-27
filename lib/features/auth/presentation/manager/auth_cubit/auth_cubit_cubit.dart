@@ -43,18 +43,12 @@ class AuthCubitCubit extends Cubit<AuthCubitState> {
           );
           return;
         }
-        // Call postActivity after successful login
-        try {
-          await postActivity(userModel.items![0].empCode ?? 0);
-        } catch (e) {
-          emit(
-            state.copyWith(
-              loginState: EnumState.failure,
-              errMessege: 'tryAgainLater',
-            ),
-          );
-          return;
-        } // Password is correct, proceed with login
+        // Call postActivity after successful login (without awaiting)
+        postActivity(userModel.items![0].empCode ?? 0).catchError((e) {
+          log("Error posting activity: $e", name: "AuthCubit");
+        });
+
+        // Password is correct, proceed with login
         log(userModel.toJson().toString(), name: "user model at cubit");
         emit(
           state.copyWith(

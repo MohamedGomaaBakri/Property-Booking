@@ -325,6 +325,16 @@ class _BuildingViewState extends State<BuildingView> {
                         units: modelUnits,
                         photos: modelPhotos,
                         allFilteredUnits: filteredUnits,
+                        onRefresh: () {
+                          setState(() {
+                            _unitsFuture = _homeDatasource.getUnitsByBuilding(
+                              widget.building.buildingCode!,
+                            );
+                            _photosFuture = _homeDatasource.getAllPhotosByBuilding(
+                              widget.building.buildingCode!,
+                            );
+                          });
+                        },
                       );
                     },
                   ),

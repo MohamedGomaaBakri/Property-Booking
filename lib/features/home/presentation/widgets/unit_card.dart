@@ -10,12 +10,14 @@ class UnitCard extends StatelessWidget {
   final UnitModel unit;
   final List<UnitModel> units;
   final int index;
+  final VoidCallback? onRefresh;
 
   const UnitCard({
     super.key,
     required this.unit,
     required this.units,
     required this.index,
+    this.onRefresh,
   });
 
   @override
@@ -27,8 +29,11 @@ class UnitCard extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) =>
-                UnitDetailsView(units: units, initialIndex: index),
+            builder: (context) => UnitDetailsView(
+              units: units,
+              initialIndex: index,
+              onRefresh: onRefresh,
+            ),
           ),
         );
       },

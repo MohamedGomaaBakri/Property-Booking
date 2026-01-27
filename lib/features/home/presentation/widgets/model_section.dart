@@ -13,6 +13,7 @@ class ModelSection extends StatefulWidget {
   final List<UnitModel> units;
   final List<BuildingPhotoModel> photos;
   final List<UnitModel> allFilteredUnits;
+  final VoidCallback? onRefresh;
 
   const ModelSection({
     super.key,
@@ -20,6 +21,7 @@ class ModelSection extends StatefulWidget {
     required this.units,
     required this.photos,
     required this.allFilteredUnits,
+    this.onRefresh,
   });
 
   @override
@@ -65,7 +67,6 @@ class _ModelSectionState extends State<ModelSection> {
                   child: widget.photos.isNotEmpty
                       ? CustomNetworkImage(
                           image: widget.photos.first.photoURL ?? '',
-                          placeHolder: ImageManager.splashImage,
                           fit: BoxFit.cover,
                           width: double.infinity,
                           height: double.infinity,
@@ -162,11 +163,16 @@ class _ModelSectionState extends State<ModelSection> {
                         // Dropdown Button
                         Container(
                           decoration: BoxDecoration(
-                            color: ColorManager.availableColor.withValues(alpha: 0.2),
+                            color: ColorManager.availableColor.withValues(
+                              alpha: 0.2,
+                            ),
                             borderRadius: BorderRadius.circular(8.r),
                             border: Border.all(
-                                color: ColorManager.availableColor.withValues(alpha: 0.4),
-                                width: 1.w),
+                              color: ColorManager.availableColor.withValues(
+                                alpha: 0.4,
+                              ),
+                              width: 1.w,
+                            ),
                           ),
                           child: IconButton(
                             icon: AnimatedRotation(
@@ -216,11 +222,14 @@ class _ModelSectionState extends State<ModelSection> {
                     itemBuilder: (context, index) {
                       final unit = widget.units[index];
                       // Find the absolute index in the flattened list
-                      final absoluteIndex = widget.allFilteredUnits.indexOf(unit);
+                      final absoluteIndex = widget.allFilteredUnits.indexOf(
+                        unit,
+                      );
                       return UnitCard(
                         unit: unit,
                         units: widget.allFilteredUnits,
                         index: absoluteIndex,
+                        onRefresh: widget.onRefresh,
                       );
                     },
                   ),

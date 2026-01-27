@@ -45,25 +45,48 @@ class _ReservationFormBottomSheetState
   final FocusNode _unitAreaFocus = FocusNode();
   final FocusNode _paymentValueFocus = FocusNode();
 
+  late CustomerProvider _customerProvider;
+  late ReservationFormProvider _reservationFormProvider;
+  bool _isInitialized = false;
+  bool _shouldShowForm = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_isInitialized) {
+      _customerProvider = context.read<CustomerProvider>();
+      _reservationFormProvider = context.read<ReservationFormProvider>();
+
+      _customerProvider.addListener(_updateGlobalLoading);
+      _reservationFormProvider.addListener(_updateGlobalLoading);
+
+      // Deferred build: wait for bottom sheet animation to complete
+      Future.delayed(const Duration(milliseconds: 350), () {
+        if (mounted) {
+          setState(() {
+            _shouldShowForm = true;
+          });
+        }
+      });
+      _isInitialized = true;
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     _setupFocusListeners();
 
     // Check initial loading state
-    WidgetsBinding.instance.addPostFrameCallback((_) => _updateGlobalLoading());
-
-    // Add listeners
-    context.read<CustomerProvider>().addListener(_updateGlobalLoading);
-    context.read<ReservationFormProvider>().addListener(_updateGlobalLoading);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _updateGlobalLoading();
+    });
   }
 
   void _updateGlobalLoading() {
     if (!mounted) return;
-    final customerLoading = context.read<CustomerProvider>().isLoading;
-    final reservationLoading = context
-        .read<ReservationFormProvider>()
-        .isReserving;
+    final customerLoading = _customerProvider.isLoading;
+    final reservationLoading = _reservationFormProvider.isReserving;
 
     if (customerLoading || reservationLoading) {
       BotToast.showLoading();
@@ -106,11 +129,9 @@ class _ReservationFormBottomSheetState
 
   @override
   void dispose() {
-    // Remove listeners
-    context.read<CustomerProvider>().removeListener(_updateGlobalLoading);
-    context.read<ReservationFormProvider>().removeListener(
-      _updateGlobalLoading,
-    );
+    // Remove listeners using stored references safely
+    _customerProvider.removeListener(_updateGlobalLoading);
+    _reservationFormProvider.removeListener(_updateGlobalLoading);
 
     _descriptionFocus.dispose();
     _meterPriceFocus.dispose();
@@ -126,7 +147,7 @@ class _ReservationFormBottomSheetState
   ) {
     if (!focusNode.hasFocus && mounted) {
       final provider = context.read<ReservationFormProvider>();
-      if (controller.text.trim().isEmpty) {
+      if (controller.text.trim().isEmpty && field != 'description') {
         provider.setError(field, AppLocalizations.of(context)!.fieldRequired);
       } else {
         provider.setError(field, null);
@@ -140,7 +161,6 @@ class _ReservationFormBottomSheetState
         provider.customerNameController.text.trim().isNotEmpty;
 
     return hasCustomerInfo &&
-        provider.descriptionController.text.trim().isNotEmpty &&
         provider.meterPriceController.text.trim().isNotEmpty &&
         provider.unitAreaController.text.trim().isNotEmpty &&
         provider.paymentValueController.text.trim().isNotEmpty &&
@@ -209,6 +229,11 @@ class _ReservationFormBottomSheetState
           }
         }
 
+        provider.setReserving(false);
+        if (mounted) {
+          BotToast.closeAllLoading();
+        }
+
         await _showResultDialog(
           message,
           isSuccess,
@@ -217,8 +242,7 @@ class _ReservationFormBottomSheetState
 
         if (isSuccess || message == localizations.unitAlreadyReserved) {
           if (mounted) {
-            Navigator.of(context).pop(); // Close bottom sheet
-            Navigator.of(context).pop(); // Go back
+            Navigator.of(context).pop(); // Close bottom sheet ONLY
 
             if (widget.onRefresh != null) {
               widget.onRefresh!();
@@ -234,9 +258,7 @@ class _ReservationFormBottomSheetState
         );
       }
     } finally {
-      if (mounted) {
-        provider.setReserving(false);
-      }
+      // isReserving is already set to false before result dialog
     }
   }
 
@@ -415,242 +437,263 @@ class _ReservationFormBottomSheetState
               height: 1,
             ),
             Expanded(
-              child: SingleChildScrollView(
-                controller: scrollController,
-                padding: EdgeInsets.all(16.w),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    UnitDetailLabel(label: localizations.customerNameLabel),
-                    UnitDetailDropdown(
-                      selectedUser: provider.selectedUser,
-                      users: customerProvider.customers,
-                      onSelected: provider.setSelectedUser,
-                      isLoading: customerProvider.isLoading,
-                      hint: localizations.customerNameLabel,
-                    ),
-                    SizedBox(height: 16.h),
-                    UnitDetailLabel(label: localizations.customerDescription),
-                    UnitDetailTextField(
-                      controller: provider.customerNameController,
-                      hint: localizations.enterName,
-                    ),
-                    SizedBox(height: 16.h),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+              child: !_shouldShowForm
+                  ? Center(
+                      child: CircularProgressIndicator(
+                        color: ColorManager.availableColor,
+                      ),
+                    )
+                  : SingleChildScrollView(
+                      controller: scrollController,
+                      padding: EdgeInsets.all(16.w),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          UnitDetailLabel(
+                            label: localizations.customerNameLabel,
+                          ),
+                          UnitDetailDropdown(
+                            selectedUser: provider.selectedUser,
+                            users: customerProvider.customers,
+                            onSelected: provider.setSelectedUser,
+                            isLoading: customerProvider.isLoading,
+                            hint: localizations.customerNameLabel,
+                          ),
+                          SizedBox(height: 16.h),
+                          UnitDetailLabel(
+                            label: localizations.customerDescription,
+                          ),
+                          UnitDetailTextField(
+                            controller: provider.customerNameController,
+                            hint: localizations.enterName,
+                          ),
+                          SizedBox(height: 16.h),
+                          Row(
                             children: [
-                              UnitDetailLabel(label: localizations.resDate),
-                              UnitDetailDatePicker(
-                                date: provider.reservationDate,
-                                onDateSelected: provider.setReservationDate,
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    UnitDetailLabel(
+                                      label: localizations.resDate,
+                                    ),
+                                    UnitDetailDatePicker(
+                                      date: provider.reservationDate,
+                                      onDateSelected:
+                                          provider.setReservationDate,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              SizedBox(width: 12.w),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    UnitDetailLabel(
+                                      label: localizations.contDate,
+                                    ),
+                                    UnitDetailDatePicker(
+                                      date: provider.contractDate,
+                                      onDateSelected: provider.setContractDate,
+                                    ),
+                                  ],
+                                ),
                               ),
                             ],
                           ),
-                        ),
-                        SizedBox(width: 12.w),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                          SizedBox(height: 16.h),
+                          UnitDetailLabel(
+                            label: localizations.description,
+                            isRequired: false,
+                          ),
+                          UnitDetailTextField(
+                            controller: provider.descriptionController,
+                            hint: localizations.notesHint,
+                            maxLines: 3,
+                            errorText: provider.descriptionError,
+                            focusNode: _descriptionFocus,
+                          ),
+                          SizedBox(height: 24.h),
+                          Row(
                             children: [
-                              UnitDetailLabel(label: localizations.contDate),
-                              UnitDetailDatePicker(
-                                date: provider.contractDate,
-                                onDateSelected: provider.setContractDate,
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    UnitDetailLabel(
+                                      label: localizations.meterPrice,
+                                      isRequired: true,
+                                    ),
+                                    UnitDetailTextField(
+                                      controller: provider.meterPriceController,
+                                      isNumber: true,
+                                      formatters: [
+                                        ThousandsSeparatorInputFormatter(),
+                                      ],
+                                      errorText: provider.meterPriceError,
+                                      focusNode: _meterPriceFocus,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Padding(
+                                padding: EdgeInsets.only(
+                                  top: 25.h,
+                                  left: 5.w,
+                                  right: 5.w,
+                                ),
+                                child: Text(
+                                  "✕",
+                                  style: TextStyle(
+                                    color: ColorManager.availableColor,
+                                    fontSize: 20.sp,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    UnitDetailLabel(
+                                      label: localizations.unitArea,
+                                      isRequired: true,
+                                    ),
+                                    UnitDetailTextField(
+                                      controller: provider.unitAreaController,
+                                      isNumber: true,
+                                      formatters: [
+                                        ThousandsSeparatorInputFormatter(),
+                                      ],
+                                      errorText: provider.unitAreaError,
+                                      focusNode: _unitAreaFocus,
+                                    ),
+                                  ],
+                                ),
                               ),
                             ],
                           ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 16.h),
-                    UnitDetailLabel(
-                      label: localizations.description,
-                      isRequired: true,
-                    ),
-                    UnitDetailTextField(
-                      controller: provider.descriptionController,
-                      hint: localizations.notesHint,
-                      maxLines: 3,
-                      errorText: provider.descriptionError,
-                      focusNode: _descriptionFocus,
-                    ),
-                    SizedBox(height: 24.h),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              UnitDetailLabel(
-                                label: localizations.meterPrice,
-                                isRequired: true,
-                              ),
-                              UnitDetailTextField(
-                                controller: provider.meterPriceController,
-                                isNumber: true,
-                                formatters: [
-                                  ThousandsSeparatorInputFormatter(),
-                                ],
-                                errorText: provider.meterPriceError,
-                                focusNode: _meterPriceFocus,
-                              ),
-                            ],
+                          SizedBox(height: 16.h),
+                          Divider(
+                            color: ColorManager.white.withValues(alpha: 0.2),
                           ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(
-                            top: 25.h,
-                            left: 5.w,
-                            right: 5.w,
+                          UnitDetailLabel(label: localizations.totalPriceAuto),
+                          UnitDetailTextField(
+                            controller: provider.totalPriceController,
+                            enabled: false,
+                            suffix: isArabic ? "ج.م" : "EGP",
+                            color: ColorManager.availableColor,
                           ),
-                          child: Text(
-                            "✕",
-                            style: TextStyle(
+                          Divider(
+                            color: ColorManager.white.withValues(alpha: 0.2),
+                            height: 40.h,
+                          ),
+                          Text(
+                            localizations.userInput,
+                            style: GoogleFonts.poppins(
                               color: ColorManager.availableColor,
-                              fontSize: 20.sp,
+                              fontSize: 18.sp,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                        ),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                          SizedBox(height: 16.h),
+                          Row(
                             children: [
-                              UnitDetailLabel(
-                                label: localizations.unitArea,
-                                isRequired: true,
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    UnitDetailLabel(
+                                      label: localizations.payValue,
+                                      isRequired: true,
+                                    ),
+                                    UnitDetailTextField(
+                                      controller:
+                                          provider.paymentValueController,
+                                      isNumber: true,
+                                      formatters: [
+                                        ThousandsSeparatorInputFormatter(),
+                                      ],
+                                      errorText: provider.paymentValueError,
+                                      focusNode: _paymentValueFocus,
+                                    ),
+                                  ],
+                                ),
                               ),
-                              UnitDetailTextField(
-                                controller: provider.unitAreaController,
-                                isNumber: true,
-                                formatters: [
-                                  ThousandsSeparatorInputFormatter(),
-                                ],
-                                errorText: provider.unitAreaError,
-                                focusNode: _unitAreaFocus,
+                              SizedBox(width: 12.w),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    UnitDetailLabel(
+                                      label: localizations.dueDate,
+                                    ),
+                                    UnitDetailDatePicker(
+                                      date: provider.dueDate,
+                                      onDateSelected: provider.setDueDate,
+                                    ),
+                                  ],
+                                ),
                               ),
                             ],
                           ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 16.h),
-                    Divider(color: ColorManager.white.withValues(alpha: 0.2)),
-                    UnitDetailLabel(label: localizations.totalPriceAuto),
-                    UnitDetailTextField(
-                      controller: provider.totalPriceController,
-                      enabled: false,
-                      suffix: isArabic ? "ج.م" : "EGP",
-                      color: ColorManager.availableColor,
-                    ),
-                    Divider(
-                      color: ColorManager.white.withValues(alpha: 0.2),
-                      height: 40.h,
-                    ),
-                    Text(
-                      localizations.userInput,
-                      style: GoogleFonts.poppins(
-                        color: ColorManager.availableColor,
-                        fontSize: 18.sp,
-                        fontWeight: FontWeight.bold,
+                          SizedBox(height: 32.h),
+                        ],
                       ),
                     ),
-                    SizedBox(height: 16.h),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              UnitDetailLabel(
-                                label: localizations.payValue,
-                                isRequired: true,
-                              ),
-                              UnitDetailTextField(
-                                controller: provider.paymentValueController,
-                                isNumber: true,
-                                formatters: [
-                                  ThousandsSeparatorInputFormatter(),
-                                ],
-                                errorText: provider.paymentValueError,
-                                focusNode: _paymentValueFocus,
-                              ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(width: 12.w),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              UnitDetailLabel(label: localizations.dueDate),
-                              UnitDetailDatePicker(
-                                date: provider.dueDate,
-                                onDateSelected: provider.setDueDate,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 32.h),
-                  ],
-                ),
-              ),
             ),
-            Container(
-              padding: EdgeInsets.all(16.w),
-              decoration: BoxDecoration(
-                color: ColorManager.black,
-                border: Border(
-                  top: BorderSide(
-                    color: ColorManager.white.withValues(alpha: 0.2),
-                    width: 1.w,
+            if (_shouldShowForm)
+              Container(
+                padding: EdgeInsets.all(16.w),
+                decoration: BoxDecoration(
+                  color: ColorManager.black,
+                  border: Border(
+                    top: BorderSide(
+                      color: ColorManager.white.withValues(alpha: 0.2),
+                      width: 1.w,
+                    ),
+                  ),
+                ),
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 50.h,
+                  child: ElevatedButton(
+                    onPressed: areFieldsFilled && !provider.isReserving
+                        ? () => _handleReservation(provider)
+                        : null,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: areFieldsFilled
+                          ? ColorManager.availableColor
+                          : ColorManager.availableColor.withOpacity(0.5),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12.r),
+                      ),
+                      disabledBackgroundColor: ColorManager.availableColor
+                          .withOpacity(0.3),
+                    ),
+                    child: provider.isReserving
+                        ? SizedBox(
+                            height: 20.h,
+                            width: 20.h,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: ColorManager.white,
+                            ),
+                          )
+                        : Text(
+                            localizations.reserve,
+                            style: TextStyle(
+                              color: areFieldsFilled
+                                  ? ColorManager.white
+                                  : ColorManager.white.withOpacity(0.7),
+                              fontSize: 18.sp,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                   ),
                 ),
               ),
-              child: SizedBox(
-                width: double.infinity,
-                height: 50.h,
-                child: ElevatedButton(
-                  onPressed: areFieldsFilled && !provider.isReserving
-                      ? () => _handleReservation(provider)
-                      : null,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: areFieldsFilled
-                        ? ColorManager.availableColor
-                        : ColorManager.availableColor.withOpacity(0.5),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12.r),
-                    ),
-                    disabledBackgroundColor: ColorManager.availableColor
-                        .withOpacity(0.3),
-                  ),
-                  child: provider.isReserving
-                      ? SizedBox(
-                          height: 20.h,
-                          width: 20.h,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: ColorManager.white,
-                          ),
-                        )
-                      : Text(
-                          localizations.reserve,
-                          style: TextStyle(
-                            color: areFieldsFilled
-                                ? ColorManager.white
-                                : ColorManager.white.withOpacity(0.7),
-                            fontSize: 18.sp,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                ),
-              ),
-            ),
           ],
         ),
       ),

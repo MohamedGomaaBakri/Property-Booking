@@ -59,13 +59,9 @@ class AuthRepo {
         headers: {'Content-Type': 'application/json'},
         data: jsonEncode(loginData),
       );
-      if (response.statusCode != 200 && response.statusCode != 201) {
-        log('Failed to post login data. Status code: ${response.statusCode}');
-        log(' ${response.data}', name: "Response Body:");
-      } else {
-        log(' ${response.data}', name: "Response Body:");
-        log('Login activity posted successfully!');
-      }
+      
+      log('Response Body: $response', name: "AuthRepo");
+      log('Login activity posted successfully!');
     } catch (e) {
       log("Could not post activity data: $e");
     }

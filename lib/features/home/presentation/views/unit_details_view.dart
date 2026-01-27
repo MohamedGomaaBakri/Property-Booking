@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -35,6 +36,7 @@ class _UnitDetailsViewState extends State<UnitDetailsView> {
   late PageController _pageController;
   late int _currentIndex;
   late HomeDatasource _homeDatasource;
+  late List<UnitModel> _units;
 
   final NumberFormat _numberFormatter = NumberFormat('#,##0.00', 'en_US');
 
@@ -43,12 +45,31 @@ class _UnitDetailsViewState extends State<UnitDetailsView> {
     super.initState();
     _homeDatasource = getIt<HomeDatasource>();
     _currentIndex = widget.initialIndex;
+    _units = List.from(widget.units);
     _pageController = PageController(initialPage: _currentIndex);
 
     // Initialize form for the first unit
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<ReservationFormProvider>().init(widget.units[_currentIndex]);
+      context.read<ReservationFormProvider>().init(_units[_currentIndex]);
     });
+  }
+
+  Future<void> _refreshUnits() async {
+    final buildingCode = _units.firstOrNull?.buildingCode;
+    if (buildingCode == null) return;
+
+    try {
+      final updatedUnits = await _homeDatasource.getUnitsByBuilding(buildingCode.toInt());
+      if (mounted) {
+        setState(() {
+          _units = updatedUnits;
+        });
+        // Call global refresh if provided
+        widget.onRefresh?.call();
+      }
+    } catch (e) {
+      log("Error refreshing units: $e", name: "UnitDetailsView");
+    }
   }
 
   String _formatValue(num? value) {
@@ -86,16 +107,16 @@ class _UnitDetailsViewState extends State<UnitDetailsView> {
       ),
       body: PageView.builder(
         controller: _pageController,
-        itemCount: widget.units.length,
+        itemCount: _units.length,
         onPageChanged: (index) {
           setState(() {
             _currentIndex = index;
           });
           // Reset/init form for the new unit
-          context.read<ReservationFormProvider>().init(widget.units[index]);
+          context.read<ReservationFormProvider>().init(_units[index]);
         },
         itemBuilder: (context, index) {
-          final unit = widget.units[index];
+          final unit = _units[index];
           final status = unit.unitStatus?.toInt() ?? 4;
           final fullDescription = isArabic
               ? (unit.unitNameA ?? "-")
@@ -188,7 +209,7 @@ class _UnitDetailsViewState extends State<UnitDetailsView> {
                         const Divider(color: Colors.white24, height: 40),
                         ReservationTitleWidget(
                           unit: unit,
-                          onRefresh: widget.onRefresh,
+                          onRefresh: _refreshUnits,
                           homeDatasource: _homeDatasource,
                         ),
                         SizedBox(height: 16.h),

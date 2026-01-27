@@ -66,8 +66,10 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
           );
         }
         if (state.loginState == EnumState.success) {
-          context.pushNamed(RouterPath.homeView, arguments: state.userModel);
-          // context.pushReplacementNamed(RouterPath.loginView);
+          context.pushReplacementNamed(
+            RouterPath.homeView,
+            arguments: state.userModel,
+          );
         }
       },
       builder: (context, state) {

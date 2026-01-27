@@ -28,17 +28,29 @@ class ReservationFormProvider with ChangeNotifier {
   final NumberFormat _numberFormatter = NumberFormat('#,##0.00', 'en_US');
 
   ReservationFormProvider() {
+    customerNameController.addListener(notifyListeners);
+    descriptionController.addListener(notifyListeners);
     meterPriceController.addListener(calculateTotal);
     unitAreaController.addListener(calculateTotal);
+    paymentValueController.addListener(notifyListeners);
   }
 
   void init(UnitModel unit) {
-    // Check if we need to reset/initialize
+    // Temporarily remove listeners to avoid multiple calculateTotal and notifyListeners calls
+    meterPriceController.removeListener(calculateTotal);
+    unitAreaController.removeListener(calculateTotal);
+
     meterPriceController.text = _numberFormatter.format(
       unit.meterPriceInst ?? 0,
     );
     unitAreaController.text = unit.unitArea?.toString() ?? "0";
-    calculateTotal();
+
+    // Re-add listeners
+    meterPriceController.addListener(calculateTotal);
+    unitAreaController.addListener(calculateTotal);
+
+    // Initial calculation without extra notification
+    _calculateTotalInternal();
 
     // Reset other fields for a NEW unit
     customerNameController.clear();
@@ -74,10 +86,17 @@ class ReservationFormProvider with ChangeNotifier {
   }
 
   void calculateTotal() {
+    _calculateTotalInternal();
+    notifyListeners();
+  }
+
+  void _calculateTotalInternal() {
     final price = _parseFormatted(meterPriceController.text);
     final area = _parseFormatted(unitAreaController.text);
-    totalPriceController.text = _numberFormatter.format(price * area);
-    notifyListeners();
+    final result = _numberFormatter.format(price * area);
+    if (totalPriceController.text != result) {
+      totalPriceController.text = result;
+    }
   }
 
   double _parseFormatted(String text) {

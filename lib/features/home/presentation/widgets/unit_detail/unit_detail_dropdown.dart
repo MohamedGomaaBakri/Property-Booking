@@ -3,7 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../../core/utils/manager/color_manager/color_manager.dart';
 import '../../../data/models/customer_model.dart';
 
-class UnitDetailDropdown extends StatelessWidget {
+class UnitDetailDropdown extends StatefulWidget {
   final String? selectedUser;
   final List<CustomerModel> users;
   final Function(String?) onSelected;
@@ -20,8 +20,33 @@ class UnitDetailDropdown extends StatelessWidget {
   });
 
   @override
+  State<UnitDetailDropdown> createState() => _UnitDetailDropdownState();
+}
+
+class _UnitDetailDropdownState extends State<UnitDetailDropdown> {
+  List<DropdownMenuEntry<String>>? _cachedEntries;
+  List<CustomerModel>? _lastUsers;
+
+  List<DropdownMenuEntry<String>> _getEntries() {
+    if (_cachedEntries != null && _lastUsers == widget.users) {
+      return _cachedEntries!;
+    }
+    _lastUsers = widget.users;
+    _cachedEntries = widget.users.map((CustomerModel user) {
+      return DropdownMenuEntry<String>(
+        value: user.code?.toString() ?? "",
+        label: user.nameA ?? "",
+        style: MenuItemButton.styleFrom(
+          foregroundColor: ColorManager.white,
+        ),
+      );
+    }).toList();
+    return _cachedEntries!;
+  }
+
+  @override
   Widget build(BuildContext context) {
-    if (isLoading) {
+    if (widget.isLoading) {
       return Container(
         padding: EdgeInsets.symmetric(vertical: 14.h),
         decoration: BoxDecoration(
@@ -48,8 +73,8 @@ class UnitDetailDropdown extends StatelessWidget {
       builder: (context, constraints) {
         return DropdownMenu<String>(
           width: constraints.maxWidth,
-          initialSelection: selectedUser,
-          hintText: hint,
+          initialSelection: widget.selectedUser,
+          hintText: widget.hint,
           enableSearch: true,
           enableFilter: true,
           requestFocusOnTap: true,
@@ -88,16 +113,8 @@ class UnitDetailDropdown extends StatelessWidget {
               fontSize: 14.sp,
             ),
           ),
-          dropdownMenuEntries: users.map((CustomerModel user) {
-            return DropdownMenuEntry<String>(
-              value: user.code?.toString() ?? "",
-              label: user.nameA ?? "",
-              style: MenuItemButton.styleFrom(
-                foregroundColor: ColorManager.white,
-              ),
-            );
-          }).toList(),
-          onSelected: onSelected,
+          dropdownMenuEntries: _getEntries(),
+          onSelected: widget.onSelected,
         );
       },
     );
