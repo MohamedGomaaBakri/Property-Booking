@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:propertybooking/core/utils/services/service_locator.dart';
 import 'package:propertybooking/features/home/data/datasource/home_datasource.dart';
@@ -100,12 +101,7 @@ class _BuildingViewState extends State<BuildingView> {
               future: Future.wait([_unitsFuture, _photosFuture]),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(
-                    child: CircularProgressIndicator(
-                      color: ColorManager.availableColor,
-                      strokeWidth: 2.0,
-                    ),
-                  );
+                  return _buildSkeletonBody();
                 }
 
                 if (snapshot.hasError) {
@@ -330,9 +326,10 @@ class _BuildingViewState extends State<BuildingView> {
                             _unitsFuture = _homeDatasource.getUnitsByBuilding(
                               widget.building.buildingCode!,
                             );
-                            _photosFuture = _homeDatasource.getAllPhotosByBuilding(
-                              widget.building.buildingCode!,
-                            );
+                            _photosFuture = _homeDatasource
+                                .getAllPhotosByBuilding(
+                                  widget.building.buildingCode!,
+                                );
                           });
                         },
                       );
@@ -343,6 +340,76 @@ class _BuildingViewState extends State<BuildingView> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildSkeletonBody() {
+    return Skeletonizer(
+      enabled: true,
+      child: ListView.builder(
+        padding: EdgeInsets.symmetric(vertical: 8.h),
+        itemCount: 4,
+        itemBuilder: (context, index) {
+          if (index == 0) {
+            // Legend Skeleton
+            return Container(
+              height: 60.h,
+              margin: EdgeInsets.symmetric(vertical: 8.h, horizontal: 4.w),
+              decoration: BoxDecoration(
+                color: ColorManager.white.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(12.r),
+              ),
+            );
+          }
+
+          // Model Section Skeleton (Mimicking ModelSection layout)
+          return Container(
+            height: 200.h,
+            margin: EdgeInsets.symmetric(horizontal: 4.w, vertical: 12.h),
+            decoration: BoxDecoration(
+              color: ColorManager.white.withValues(alpha: 0.05),
+              borderRadius: BorderRadius.circular(16.r),
+            ),
+            child: Stack(
+              children: [
+                // Bottom Info Column (Mimicking the real UI)
+                Positioned(
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  child: Padding(
+                    padding: EdgeInsets.all(16.w),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Model Name Skeleton
+                        Container(
+                          width: 150.w,
+                          height: 20.h,
+                          decoration: BoxDecoration(
+                            color: ColorManager.white.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(4.r),
+                          ),
+                        ),
+                        SizedBox(height: 8.h),
+                        // Available Units Skeleton
+                        Container(
+                          width: 100.w,
+                          height: 14.h,
+                          decoration: BoxDecoration(
+                            color: ColorManager.white.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(4.r),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }

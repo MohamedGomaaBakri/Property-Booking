@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 import '../../../../../core/utils/manager/color_manager/color_manager.dart';
 import '../../../data/models/customer_model.dart';
 

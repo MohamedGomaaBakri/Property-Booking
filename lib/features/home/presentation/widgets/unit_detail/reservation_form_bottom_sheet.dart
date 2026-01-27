@@ -1,6 +1,7 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -262,6 +263,45 @@ class _ReservationFormBottomSheetState
     }
   }
 
+  Widget _buildFormSkeleton() {
+    return Skeletonizer(
+      enabled: true,
+      child: SingleChildScrollView(
+        padding: EdgeInsets.all(16.w),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: List.generate(6, (index) {
+            return Padding(
+              padding: EdgeInsets.only(bottom: 16.h),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: 100.w,
+                    height: 14.h,
+                    decoration: BoxDecoration(
+                      color: ColorManager.white.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(4.r),
+                    ),
+                  ),
+                  SizedBox(height: 8.h),
+                  Container(
+                    width: double.infinity,
+                    height: 50.h,
+                    decoration: BoxDecoration(
+                      color: ColorManager.white.withValues(alpha: 0.05),
+                      borderRadius: BorderRadius.circular(12.r),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }),
+        ),
+      ),
+    );
+  }
+
   String _getErrorMessageFromDio(DioException error, AppLocalizations l10n) {
     if (error.response != null) {
       if (error.response!.statusCode != null &&
@@ -438,11 +478,7 @@ class _ReservationFormBottomSheetState
             ),
             Expanded(
               child: !_shouldShowForm
-                  ? Center(
-                      child: CircularProgressIndicator(
-                        color: ColorManager.availableColor,
-                      ),
-                    )
+                  ? _buildFormSkeleton()
                   : SingleChildScrollView(
                       controller: scrollController,
                       padding: EdgeInsets.all(16.w),
@@ -672,25 +708,16 @@ class _ReservationFormBottomSheetState
                       disabledBackgroundColor: ColorManager.availableColor
                           .withOpacity(0.3),
                     ),
-                    child: provider.isReserving
-                        ? SizedBox(
-                            height: 20.h,
-                            width: 20.h,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: ColorManager.white,
-                            ),
-                          )
-                        : Text(
-                            localizations.reserve,
-                            style: TextStyle(
-                              color: areFieldsFilled
-                                  ? ColorManager.white
-                                  : ColorManager.white.withOpacity(0.7),
-                              fontSize: 18.sp,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
+                    child: Text(
+                      localizations.reserve,
+                      style: TextStyle(
+                        color: areFieldsFilled
+                            ? ColorManager.white
+                            : ColorManager.white.withValues(alpha: 0.7),
+                        fontSize: 18.sp,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
                 ),
               ),

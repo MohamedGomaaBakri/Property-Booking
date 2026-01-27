@@ -13,6 +13,8 @@ import 'package:propertybooking/core/providers/language_provider.dart';
 import 'features/home/presentation/providers/customer_provider.dart';
 import 'features/home/presentation/providers/reservation_form_provider.dart';
 import 'package:bot_toast/bot_toast.dart';
+import 'package:skeletonizer/skeletonizer.dart';
+import 'package:propertybooking/core/utils/manager/color_manager/color_manager.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -42,20 +44,28 @@ class PropertyBooking extends StatelessWidget {
             builder: (context, child) {
               return BlocProvider(
                 create: (context) => AuthCubitCubit(getIt<AuthRepo>()),
-                child: MaterialApp(
-                  debugShowCheckedModeBanner: false,
-                  builder: BotToastInit(),
-                  navigatorObservers: [BotToastNavigatorObserver()],
-                  locale: languageProvider.currentLocale,
-                  supportedLocales: const [Locale('ar'), Locale('en')],
-                  localizationsDelegates: const [
-                    AppLocalizations.delegate,
-                    GlobalMaterialLocalizations.delegate,
-                    GlobalWidgetsLocalizations.delegate,
-                    GlobalCupertinoLocalizations.delegate,
-                  ],
-                  initialRoute: RouterPath.splashView,
-                  onGenerateRoute: AppRouter().generateRoute,
+                child: SkeletonizerConfig(
+                  data: SkeletonizerConfigData(
+                    effect: ShimmerEffect(
+                      baseColor: ColorManager.white.withValues(alpha: 0.1),
+                      highlightColor: ColorManager.white.withValues(alpha: 0.2),
+                    ),
+                  ),
+                  child: MaterialApp(
+                    debugShowCheckedModeBanner: false,
+                    builder: BotToastInit(),
+                    navigatorObservers: [BotToastNavigatorObserver()],
+                    locale: languageProvider.currentLocale,
+                    supportedLocales: const [Locale('ar'), Locale('en')],
+                    localizationsDelegates: const [
+                      AppLocalizations.delegate,
+                      GlobalMaterialLocalizations.delegate,
+                      GlobalWidgetsLocalizations.delegate,
+                      GlobalCupertinoLocalizations.delegate,
+                    ],
+                    initialRoute: RouterPath.splashView,
+                    onGenerateRoute: AppRouter().generateRoute,
+                  ),
                 ),
               );
             },
